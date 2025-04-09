@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chapter 1 - 컴퓨터 네트워크와 인터넷</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Pretendard", sans-serif;
+        margin: 0;
+        padding: 2rem;
+        background-color: #f9f9fb;
+        color: #333;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #2c5282;
+      }
+      section {
+        background: white;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      ul {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      a {
+        color: #3182ce;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Chapter 1: 컴퓨터 네트워크와 인터넷</h1>
+
+    <section>
+      <h2>1.1 인터넷이란?</h2>
+      <p>
+        인터넷은 전 세계 수십억 개의 장치들이 연결되어 있는 네트워크들의
+        네트워크(network of networks)이다. 이 장치들은
+        <strong>호스트(host) 또는 종단 시스템(end system)</strong>이라 불리며,
+        웹 브라우저, 이메일 클라이언트 등 다양한 응용 프로그램(application)을
+        실행한다.
+      </p>
+
+      <p>인터넷을 구성하는 핵심 요소는 다음과 같다:</p>
+      <ul>
+        <li>
+          <strong>통신 링크(communication links)</strong>: 광섬유, 구리선, 무선,
+          위성 등
+        </li>
+        <li>
+          <strong>라우터(router)와 스위치(switch)</strong>: 데이터 전달 및 경로
+          결정
+        </li>
+      </ul>
+
+      <p>
+        통신 링크는 <strong>대역폭(bandwidth)</strong>이라는 전송 속도로
+        표현되며, 이는 초당 몇 비트의 데이터를 전송할 수 있는지를 나타낸다.
+      </p>
+
+      <h3>서비스 관점 vs. 하드웨어 관점</h3>
+      <ul>
+        <li>
+          <strong>"nuts and bolts" 관점</strong>: 하드웨어 중심 설명 (링크,
+          라우터, 프로토콜 등)
+        </li>
+        <li>
+          <strong>서비스 관점</strong>: 다양한 응용 서비스(Web, VoIP, 이메일,
+          게임 등)를 사용자에게 제공하는 플랫폼
+        </li>
+      </ul>
+
+      <h3>인터넷의 기본 구조</h3>
+      <p>
+        인터넷은 다양한 수준의 ISP(Internet Service Provider)가 상호 연결되어
+        구성된다:
+      </p>
+      <ul>
+        <li>로컬 ISP ↔ 지역 ISP ↔ 글로벌 ISP</li>
+        <li>IXP(Internet Exchange Point)를 통한 피어링</li>
+        <li>
+          콘텐츠 제공자 (예: Google)는 자체 데이터 센터를 운영하고 자체
+          네트워크를 통해 사용자에게 직접 콘텐츠를 제공한다.
+        </li>
+      </ul>
+
+      <h3>프로토콜과 표준화</h3>
+      <p>
+        인터넷의 통신은 <strong>프로토콜(protocol)</strong>이라는 규약에 따라
+        수행된다. 프로토콜은 메시지의 형식, 순서, 송수신 동작을 정의하며,
+        대표적인 예로는 TCP, IP, HTTP, DNS 등이 있다.
+      </p>
+
+      <p>표준화는 여러 국제기구에 의해 관리되며, 대표적으로 다음과 같다:</p>
+      <ul>
+        <li><strong>IETF</strong> (RFC를 통해 표준 정의)</li>
+        <li><strong>IEEE</strong> (WiFi, Ethernet 등)</li>
+        <li><strong>ISO, ITU-T</strong> 등</li>
+      </ul>
+
+      <h3>인터넷과 IoT</h3>
+      <p>
+        최근에는 센서, 스마트폰, 가전기기 등이 인터넷에 연결되는
+        <strong>IoT (Internet of Things)</strong>가 확산되고 있으며, 이는
+        인터넷의 경계를 기존 컴퓨터에서 실세계 환경으로 확장시키고 있다.
+      </p>
+
+      <p>예시: 스마트 냉장고, 웨어러블 기기, 스마트 전등 등</p>
+    </section>
+
+    <section>
+      <h2>1.2 네트워크의 가장자리 (Network Edge)</h2>
+      <p>
+        네트워크 가장자리는 종단 시스템(end system), 즉 호스트(host)가 위치하는
+        부분이다. 이는 클라이언트와 서버를 포함하며, 주로 사용자의 컴퓨터,
+        스마트폰, 웹 서버 등이 해당한다.
+      </p>
+
+      <h3>종단 시스템의 구분</h3>
+      <ul>
+        <li>
+          <strong>클라이언트(client)</strong>: 서비스를 요청하는 주체 (예: 웹
+          브라우저, 메일 클라이언트)
+        </li>
+        <li>
+          <strong>서버(server)</strong>: 서비스를 제공하는 주체 (예: 웹 서버,
+          이메일 서버)
+        </li>
+      </ul>
+
+      <h3>접속 네트워크(Access Network)</h3>
+      <p>
+        종단 시스템이 인터넷에 접속하기 위해 사용하는 네트워크이다. 주요 유형은
+        다음과 같다:
+      </p>
+
+      <ul>
+        <li>
+          <strong>가정용 네트워크</strong>
+          <ul>
+            <li>
+              <strong>DSL (Digital Subscriber Line)</strong>: 전화선 사용,
+              중앙국의 DSLAM과 연결
+            </li>
+            <li><strong>케이블 모뎀</strong>: TV 케이블을 사용, CMTS에 연결</li>
+            <li>
+              <strong>FTTH (Fiber to the Home)</strong>: 광케이블이 집까지 직접
+              연결됨
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>기업 네트워크</strong>: Ethernet 기반, 고속 전송
+          (1Gbps~10Gbps)
+        </li>
+        <li>
+          <strong>무선 네트워크</strong>
+          <ul>
+            <li>WiFi (802.11): 주로 건물 내부에서 사용</li>
+            <li>모바일 네트워크 (3G, 4G, 5G): 수 km 범위</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>전송률 및 공유 여부</h3>
+      <p>접속 네트워크의 특성은 다음 요소에 의해 결정된다:</p>
+      <ul>
+        <li>
+          <strong>전송률 (Transmission Rate)</strong>: 링크가 지원하는 초당 최대
+          비트 수 (예: 100 Mbps, 1 Gbps)
+        </li>
+        <li>
+          <strong>전용 vs. 공유 링크</strong>: DSL은 각 사용자가 전용선을
+          사용하지만, 케이블망은 이웃과 공유됨
+        </li>
+      </ul>
+
+      <h3>물리 매체(Physical Media)</h3>
+      <ul>
+        <li>
+          <strong>유도 매체(guided)</strong>: 꼬임쌍선, 동축 케이블, 광섬유
+        </li>
+        <li><strong>비유도 매체(unguided)</strong>: 무선, 라디오, 위성 링크</li>
+      </ul>
+
+      <p>
+        이처럼 네트워크의 가장자리는 사용자가 인터넷에 접속하는 실질적인 경로를
+        구성하며, 그 성능과 안정성은 접속 네트워크와 물리 매체에 의해 결정된다.
+      </p>
+    </section>
+
+    <section>
+      <h2>보충</h2>
+      <h3>기본 용어 정리</h3>
+      <ul>
+        <li>
+          <strong>디지털/아날로그 신호</strong>: 디지털은 이산적인 값(0,1)으로
+          표현되며, 아날로그는 연속적인 파형으로 구성된다.
+        </li>
+        <li>
+          <strong>단위 변환</strong>: Bit → Byte(8bit) → KB(2<sup>10</sup>) → MB
+          → GB → TB → PB → EB → ZB
+        </li>
+        <li><strong>Hz(헤르츠)</strong>: 1초당 진동수</li>
+        <li>
+          <strong>bps (bits per second)</strong>: 초당 비트 전송량. 링크의 전송
+          용량을 나타낸다
+        </li>
+        <li>
+          <strong>Bandwidth (대역폭)</strong>: 전송 가능한 데이터 용량의 최대치,
+          속도에 비례한다
+        </li>
+        <li>
+          <strong>물리 매체</strong>: 유도형(꼬임쌍선, 동축, 광섬유),
+          비유도형(무선, 위성)
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>1.3 네트워크 중심 (Network Core)</h2>
+      <p>
+        네트워크 중심(Network Core)은 인터넷의 중추 역할을 하는
+        라우터(router)들과 통신 링크로 구성된 부분으로, 데이터가 출발지에서
+        목적지까지 전달되는 주 경로를 형성한다.
+      </p>
+
+      <h3>1. 패킷 교환 방식 (Packet Switching)</h3>
+      <ul>
+        <li>
+          데이터는 <strong>패킷(packet)</strong>이라는 작은 블록 단위로 분할되어
+          전송된다.
+        </li>
+        <li>
+          각 패킷은 <strong>독립적으로</strong> 라우터들을 따라 목적지로
+          전달된다.
+        </li>
+        <li>
+          <strong>저장 후 전달(store-and-forward)</strong>: 라우터는 전체 패킷을
+          수신한 후 다음 홉으로 전송한다.
+        </li>
+        <li>
+          지연은 전송 지연, 전파 지연, 처리 지연, 큐잉 지연의 합으로 계산된다.
+        </li>
+      </ul>
+
+      <h3>2. 회선 교환 방식 (Circuit Switching)</h3>
+      <ul>
+        <li>전화망에서 사용되던 방식</li>
+        <li>통신 전 <strong>종단 간 자원을 예약</strong> (대역폭, 버퍼 등)</li>
+        <li>비용은 높지만, 예측 가능한 성능 제공</li>
+        <li>자원이 독점되므로 <strong>비효율적</strong></li>
+      </ul>
+
+      <h3>3. 비교: 패킷 교환 vs. 회선 교환</h3>
+      <table border="1" cellspacing="0" cellpadding="8">
+        <tr>
+          <th>기준</th>
+          <th>패킷 교환</th>
+          <th>회선 교환</th>
+        </tr>
+        <tr>
+          <td>자원 할당</td>
+          <td>공유</td>
+          <td>전용</td>
+        </tr>
+        <tr>
+          <td>설정 시간</td>
+          <td>없음</td>
+          <td>연결 설정 필요</td>
+        </tr>
+        <tr>
+          <td>성능</td>
+          <td>변동 가능</td>
+          <td>보장됨</td>
+        </tr>
+        <tr>
+          <td>혼잡 제어</td>
+          <td>필요</td>
+          <td>필요 없음</td>
+        </tr>
+      </table>
+
+      <h3>4. 네트워크 구조</h3>
+      <ul>
+        <li>
+          수많은 ISP가 계층적으로 연결된
+          <strong>네트워크의 네트워크 구조</strong>
+        </li>
+        <li>
+          <strong>Tier-1 ISP</strong>: 글로벌 백본 제공 (예: AT&T, NTT, Sprint)
+        </li>
+        <li>
+          <strong>IXP (Internet Exchange Point)</strong>: ISP 간 트래픽 교환
+          지점
+        </li>
+        <li>
+          <strong>콘텐츠 제공자</strong>: Google, Microsoft 등 자체 백본과 CDN
+          운영
+        </li>
+      </ul>
+
+      <p>
+        ⇒ 이러한 구조 덕분에 전 세계 수십 억 대의 장치들이 서로 효율적으로
+        데이터를 주고받을 수 있다.
+      </p>
+    </section>
+
+    <section>
+      <h2>1.4 네트워크에서의 지연, 손실, 처리율</h2>
+      <p>
+        패킷이 송신지에서 수신지로 전달될 때, 다양한 원인으로 인해 지연이
+        발생하고 데이터가 손실되기도 한다. 또한 처리율은 네트워크 성능을
+        가늠하는 핵심 지표이다.
+      </p>
+
+      <h3>1. 지연(delay)의 네 가지 요소</h3>
+      <ul>
+        <li>
+          <strong>처리 지연 (Processing Delay)</strong>: 라우터가 패킷 헤더를
+          검사하고 경로를 결정하는 데 걸리는 시간
+        </li>
+        <li>
+          <strong>큐잉 지연 (Queuing Delay)</strong>: 패킷이 출력 링크를
+          기다리며 큐에 쌓이는 시간
+        </li>
+        <li>
+          <strong>전송 지연 (Transmission Delay)</strong>: 패킷을 링크로 밀어
+          넣는 데 걸리는 시간 (L/R)
+        </li>
+        <li>
+          <strong>전파 지연 (Propagation Delay)</strong>: 링크를 따라 전기 신호
+          또는 빛이 이동하는 데 걸리는 시간 (d/s)
+        </li>
+      </ul>
+
+      <h3>2. 패킷 손실 (Packet Loss)</h3>
+      <p>
+        라우터의 출력 버퍼(큐)가 가득 찬 경우, 도착한 패킷은 폐기된다. 이를 패킷
+        손실이라 하며, TCP는 재전송을 통해 이를 보완한다.
+      </p>
+
+      <h3>3. 처리율 (Throughput)</h3>
+      <ul>
+        <li><strong>순간 처리율</strong>: 특정 시점에서의 송수신 속도</li>
+        <li><strong>평균 처리율</strong>: 일정 시간 동안의 평균 전송률</li>
+        <li>
+          <strong>병목 링크</strong>: 전체 경로 중 가장 처리율이 낮은 링크가
+          전체 성능을 결정함
+        </li>
+      </ul>
+
+      <h3>4. 트래픽 강도와 큐잉 지연 관계</h3>
+      <p>
+        트래픽 강도 La/R 이 1에 가까워질수록 큐잉 지연이 급격히 증가한다. La/R이
+        1을 초과하면 지연은 무한대로 수렴하며, 손실이 발생한다.
+      </p>
+
+      <h3>5. traceroute 도구</h3>
+      <p>
+        각 라우터까지의 지연을 측정하는 데 사용된다. 실제 인터넷 경로 상의
+        지연과 손실 현상을 분석할 수 있다.
+      </p>
+    </section>
+
+    <section>
+      <h2>1.5 프로토콜 계층과 서비스 모델</h2>
+      <p>
+        인터넷은 복잡한 시스템으로 구성되며, 이를 구조화하기 위해 계층적 접근을
+        사용한다. 계층 구조는 각 기능을 모듈화하여 설계와 구현, 유지보수를
+        용이하게 한다.
+      </p>
+
+      <h3>1. 계층화의 목적</h3>
+      <ul>
+        <li>복잡한 기능을 계층별로 나누어 설계의 명확성과 효율성을 높인다.</li>
+        <li>
+          한 계층의 변경이 다른 계층에 영향을 주지 않도록 하여 유연성을
+          확보한다.
+        </li>
+        <li>인터페이스와 기능이 명확하여 시스템의 이해와 확장이 쉬워진다.</li>
+      </ul>
+
+      <h3>2. 인터넷 프로토콜 스택 (Internet Protocol Stack)</h3>
+      <ul>
+        <li>
+          <strong>응용 계층 (Application Layer)</strong>: 네트워크 기반 응용
+          프로그램을 위한 프로토콜을 제공한다. 예: HTTP, FTP, SMTP
+        </li>
+        <li>
+          <strong>전송 계층 (Transport Layer)</strong>: 호스트 간 데이터 전송을
+          담당한다. 예: TCP, UDP
+        </li>
+        <li>
+          <strong>네트워크 계층 (Network Layer)</strong>: 출발지에서
+          목적지까지의 경로를 제공한다. 예: IP
+        </li>
+        <li>
+          <strong>링크 계층 (Link Layer)</strong>: 인접한 네트워크 장치 간의
+          프레임 전송을 수행한다. 예: Ethernet, Wi-Fi
+        </li>
+        <li>
+          <strong>물리 계층 (Physical Layer)</strong>: 비트를 전기적/광학적으로
+          전송한다.
+        </li>
+      </ul>
+
+      <p>
+        각 계층은 상위 계층의 데이터를 캡슐화하여 하위 계층으로 전달하며, 전송
+        시에는 해당 계층의 헤더를 덧붙인다.
+      </p>
+
+      <h3>3. OSI 7계층 모델</h3>
+      <ul>
+        <li>표현 계층 (Presentation): 데이터 포맷 변환, 암호화, 압축</li>
+        <li>세션 계층 (Session): 통신 세션 관리</li>
+        <li>
+          인터넷에서는 이 두 계층이 명시적으로 구현되지 않으며, 필요 시 응용
+          계층에서 직접 처리한다.
+        </li>
+      </ul>
+
+      <h3>4. 계층화의 장단점</h3>
+      <ul>
+        <li><strong>장점</strong>: 관리 용이성, 표준화, 확장성</li>
+        <li><strong>단점</strong>: 중복 정보, 비효율적 처리 발생 가능</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>1.6 네트워크 보안</h2>
+      <p>
+        네트워크 보안은 외부 공격으로부터 데이터와 시스템을 보호하기 위한 기술과
+        절차의 집합이다. 인터넷은 처음 설계될 당시 신뢰 기반의 폐쇄형 구조를
+        가정하였기 때문에, 현재의 개방된 환경에서는 다양한 보안 위협에 취약하다.
+      </p>
+
+      <h3>1. 보안의 기본 질문</h3>
+      <ul>
+        <li>악의적인 사용자는 컴퓨터 네트워크를 어떻게 공격하는가?</li>
+        <li>사용자는 이러한 공격을 어떻게 방어할 수 있는가?</li>
+        <li>공격을 예방할 수 있는 구조는 어떻게 설계되어야 하는가?</li>
+      </ul>
+
+      <h3>2. 악성코드 (Malware)</h3>
+      <p>
+        말웨어는 컴퓨터 시스템에 악의적으로 침투하는 소프트웨어로, 다음과 같은
+        유형이 존재한다:
+      </p>
+      <ul>
+        <li>
+          <strong>바이러스 (Virus)</strong>: 실행 파일에 첨부되어 복제되는
+          형태이다.
+        </li>
+        <li>
+          <strong>웜 (Worm)</strong>: 스스로 네트워크를 통해 확산되는 독립형
+          프로그램이다.
+        </li>
+        <li>
+          <strong>스파이웨어 (Spyware)</strong>: 사용자의 입력, 방문 웹사이트,
+          데이터 등을 무단 수집하여 외부로 전송한다.
+        </li>
+        <li>
+          <strong>봇넷 (Botnet)</strong>: 말웨어에 감염된 다수의 호스트로 구성된
+          네트워크로, 스팸 메일 전송이나 DDoS 공격 등에 사용된다.
+        </li>
+      </ul>
+
+      <h3>3. 서비스 거부 공격 (Denial of Service, DoS)</h3>
+      <p>
+        서비스 거부 공격은 대상 서버나 네트워크 자원에 과도한 요청을 보내
+        정상적인 서비스를 방해하는 공격이다. 일반적으로 다음과 같은 절차로
+        진행된다:
+      </p>
+      <ol>
+        <li>공격 대상 식별</li>
+        <li>봇넷을 통해 다수의 좀비 호스트 확보</li>
+        <li>대상에 집중적으로 트래픽 전송</li>
+      </ol>
+      <p>DDoS는 분산 서비스 거부 공격으로, 더욱 위협적이다.</p>
+
+      <h3>4. 스니핑 (Sniffing)</h3>
+      <p>
+        공유 매체(Ethernet, 무선 네트워크)에서는 패킷이 모든 호스트에 도달하기
+        때문에, 네트워크 인터페이스 카드(NIC)가 ‘무차별 모드’로 설정된 경우,
+        지나가는 모든 패킷을 가로채 기록할 수 있다. 이를 스니핑이라 한다.
+      </p>
+
+      <h3>5. IP 스푸핑 (IP Spoofing)</h3>
+      <p>
+        공격자는 출발지 IP 주소를 위조하여 자신을 숨기거나, 응답을 다른
+        사용자에게 유도할 수 있다. 이는 회신 주소를 신뢰하는 시스템이나
+        프로토콜에서 큰 위협이 된다.
+      </p>
+
+      <h3>6. 보안 설계의 필요성</h3>
+      <p>
+        현대 인터넷은 다양한 위협에 노출되어 있기 때문에, 보안은 모든 계층에서
+        고려되어야 한다. 프로토콜 설계 시 암호화, 인증, 무결성 검증 등을
+        포함하는 것이 필요하다.
+      </p>
+
+      <p>본 장에서는 보안의 개요만 다루며, 심화된 내용은 8장에서 논의된다.</p>
+    </section>
+
+    <section>
+      <h2>1.7 인터넷의 역사</h2>
+      <p>
+        인터넷은 1960년대부터 시작되어 수십 년에 걸쳐 발전해 온 분산형 통신
+        시스템이다. 초기에는 군사적 목적의 연구에서 출발하였으며, 이후 학술,
+        상업, 대중 사용으로 확산되었다.
+      </p>
+
+      <h3>1. 초기 개념과 ARPANET (1960~1970년대)</h3>
+      <ul>
+        <li>
+          1961년: Kleinrock이 큐잉 이론을 통해 패킷 교환의 효율성을 입증함
+        </li>
+        <li>1969년: 미국 국방부 고등연구계획국(ARPA)이 ARPANET을 구축함</li>
+        <li>1972년: ARPANET의 공개 시연 및 최초의 이메일 프로그램 등장</li>
+      </ul>
+
+      <h3>2. TCP/IP와 인터넷의 기틀 (1980년대)</h3>
+      <ul>
+        <li>1983년: TCP/IP가 공식적으로 채택되어 ARPANET에 적용됨</li>
+        <li>이후 DNS, SMTP, FTP 등 주요 프로토콜이 정의됨</li>
+        <li>BITNET, CSNET, NSFNET 등의 국가 단위 네트워크가 확대됨</li>
+      </ul>
+
+      <h3>3. 웹과 상업화의 시작 (1990년대)</h3>
+      <ul>
+        <li>1991년: 월드 와이드 웹(WWW) 개념 발표 (Tim Berners-Lee)</li>
+        <li>1994년: Mosaic/Netscape 브라우저 출시로 대중화 가속</li>
+        <li>ARPANET 퇴역, NSFNET의 상업화 → 오늘날 인터넷 기반 마련</li>
+      </ul>
+
+      <h3>4. 대규모 확장과 모바일 인터넷 (2000년대 이후)</h3>
+      <ul>
+        <li>모바일 기기의 보급과 함께 무선 인터넷 사용 급증</li>
+        <li>Google, Facebook, Amazon 등의 플랫폼 기업 부상</li>
+        <li>클라우드 컴퓨팅, CDN, IoT, 소셜 네트워크 서비스 확산</li>
+        <li>2020년대: 5G, 엣지 컴퓨팅, AI 기반 네트워크로 진화 중</li>
+      </ul>
+
+      <p>
+        인터넷은 단순한 통신망을 넘어, 인간 활동 전반을 지탱하는 핵심 인프라로
+        자리 잡았으며, 지금도 끊임없이 진화하고 있다.
+      </p>
+    </section>
+
+    <p><a href="index.html">← 메인 페이지로 돌아가기</a></p>
+  </body>
+</html>
