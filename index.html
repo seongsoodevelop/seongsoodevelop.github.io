@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>김성수의 네트워크 블로그</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background-color: #f9f9fb;
+      color: #333;
+    }
+    header {
+      background-color: #2d3748;
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    section {
+      background: white;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #2c5282;
+      margin-bottom: 0.8rem;
+    }
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .profile-card {
+      background-color: #f1f5f9;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .profile-card h3 {
+      margin-top: 0;
+      color: #1a202c;
+    }
+    a {
+      color: #3182ce;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>김성수의 블로그</h1>
+    <p>컴퓨터와 휴먼이 네트워크되는 공간</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>👤 자기 소개</h2>
+      <p>안녕하세요. 단국대학교 소프트웨어학과 재학 중인 김성수입니다. 사회적 문제를 찾아가 지식과 기술을 이용해 푸는 것을 좋아합니다. 항상 더 나은 해결책을 찾기 위해 애쓰고, 실력을 키우기 위해 꾸준히 노력합니다.</p>
+    </section>
+
+    <section>
+      <h2>👥 지인 소개</h2>
+      <div class="profile-grid">
+        <div class="profile-card">
+          <h3>강준영</h3>
+          <p>독서, 영화 시청, 스포츠 게임 등을 즐기며, 인공지능 자율주행의 미래와 컴퓨터 운영체제에 관심이 많습니다. 작년에도 이상범 교수님의 수업을 수강했고, 블로그 과제를 성실히 수행했습니다. 현재는 졸업 준비와 실무 프로젝트에 집중하고 있습니다.</p>
+        </div>
+        <div class="profile-card">
+          <h3>강유진</h3>
+          <p>21학번 정치외교학과 전공, 소프트웨어학과 복수전공 중입니다. "젊어서 고생은 사서도 한다"는 좌우명을 가지고 있으며, 배낭여행과 고전 독서를 즐깁니다. 탄자니아 디지털 봉사, 서당 활동, 앱 기획 경험이 있으며, Flutter로 노인을 위한 택시 앱 개발의 백엔드 파트를 맡고 있습니다.</p>
+        </div>
+        <div class="profile-card">
+          <h3>권민지</h3>
+          <p>23학번 소프트웨어학과 재학생입니다. 최근 보안에 관심을 가지며 보안 관련 수업과 스터디에 적극 참여하고 있습니다. 취미는 소설 읽기이며, SF 장르에 흥미를 느껴 탐독 중입니다.</p>
+        </div>
+        <div class="profile-card">
+          <h3>이상범 교수님</h3>
+          <p>컴퓨터 네트워크 수업을 담당하시며, 네트워크 구조와 TCP/IP 프로토콜에 깊은 전문 지식을 갖추신 지도 교수님입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>📚 컴퓨터 네트워크 강의 정리</h2>
+      <ul>
+        <li><a href="ch01.html">Chapter 1: 컴퓨터 네트워크와 인터넷</a></li>
+        <li><a href="ch02.html">Chapter 2: 어플리케이션 계층</a></li>
+        <li><a href="ch03.html">Chapter 3: 전송 계층</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 김성수. All rights reserved.</p>
+  </footer>
+</body>
+</html>
