@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Red-Black Tree Visualization</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100vh;
+        background: #f2f2f2;
+      }
+
+      .canvas-container {
+        border: 2px solid #333;
+        width: 800px;
+        height: 600px;
+        position: relative;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="canvas-container" id="canvas-container"></div>
+
+    <!-- p5.js 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script>
+      let tree;
+      let canvas;
+
+      function setup() {
+        canvas = createCanvas(800, 600);
+        canvas.parent("canvas-container"); // 캔버스를 특정 div 안에 삽입
+        tree = new RBTree();
+        frameRate(60);
+      }
+
+      function draw() {
+        background(255);
+        if (tree.root) {
+          tree.updatePositions(tree.root, width / 2, 40, width / 4);
+          tree.display(tree.root);
+        }
+      }
+
+      function mousePressed(event) {
+        // 캔버스 영역 안에서만 반응
+        const bounds = canvas.elt.getBoundingClientRect();
+        const withinCanvas =
+          mouseX >= 0 &&
+          mouseX <= width &&
+          mouseY >= 0 &&
+          mouseY <= height &&
+          event.clientX >= bounds.left &&
+          event.clientX <= bounds.right &&
+          event.clientY >= bounds.top &&
+          event.clientY <= bounds.bottom;
+
+        if (!withinCanvas) return;
+
+        let value = prompt("숫자를 입력하세요:");
+        if (value === null) return;
+        value = parseInt(value);
+        if (isNaN(value)) return alert("숫자를 입력해주세요!");
+
+        if (event.button === 0) {
+          tree.insert(value);
+        } else if (event.button === 2) {
+          tree.remove(value);
+        }
+        return false;
+      }
+
+      function contextMenuHandler(e) {
+        e.preventDefault();
+      }
+
+      window.addEventListener("contextmenu", contextMenuHandler);
+
+      const RED = true;
+      const BLACK = false;
+
+      class RBNode {
+        constructor(key) {
+          this.key = key;
+          this.color = RED;
+          this.left = null;
+          this.right = null;
+          this.parent = null;
+          this.x = 0;
+          this.y = 0;
+          this.targetX = 0;
+          this.targetY = 0;
+        }
+
+        isRed() {
+          return this.color === RED;
+        }
+
+        updatePosition() {
+          this.x = lerp(this.x, this.targetX, 0.1);
+          this.y = lerp(this.y, this.targetY, 0.1);
+        }
+      }
+
+      class RBTree {
+        constructor() {
+          this.root = null;
+        }
+
+        insert(key) {
+          let newNode = new RBNode(key);
+          this.root = this._insert(this.root, newNode);
+          this.fixInsert(newNode);
+          this.root.color = BLACK;
+        }
+
+        _insert(root, node) {
+          if (!root) return node;
+          if (node.key < root.key) {
+            root.left = this._insert(root.left, node);
+            root.left.parent = root;
+          } else if (node.key > root.key) {
+            root.right = this._insert(root.right, node);
+            root.right.parent = root;
+          }
+          return root;
+        }
+
+        fixInsert(node) {
+          while (node !== this.root && node.parent.isRed()) {
+            let parent = node.parent;
+            let grandparent = parent.parent;
+            if (!grandparent) break;
+
+            if (parent === grandparent.left) {
+              let uncle = grandparent.right;
+              if (uncle && uncle.isRed()) {
+                parent.color = BLACK;
+                uncle.color = BLACK;
+                grandparent.color = RED;
+                node = grandparent;
+              } else {
+                if (node === parent.right) {
+                  node = parent;
+                  this.rotateLeft(node);
+                }
+                parent.color = BLACK;
+                grandparent.color = RED;
+                this.rotateRight(grandparent);
+              }
+            } else {
+              let uncle = grandparent.left;
+              if (uncle && uncle.isRed()) {
+                parent.color = BLACK;
+                uncle.color = BLACK;
+                grandparent.color = RED;
+                node = grandparent;
+              } else {
+                if (node === parent.left) {
+                  node = parent;
+                  this.rotateRight(node);
+                }
+                parent.color = BLACK;
+                grandparent.color = RED;
+                this.rotateLeft(grandparent);
+              }
+            }
+          }
+        }
+
+        rotateLeft(x) {
+          let y = x.right;
+          x.right = y.left;
+          if (y.left) y.left.parent = x;
+          y.parent = x.parent;
+          if (!x.parent) {
+            this.root = y;
+          } else if (x === x.parent.left) {
+            x.parent.left = y;
+          } else {
+            x.parent.right = y;
+          }
+          y.left = x;
+          x.parent = y;
+        }
+
+        rotateRight(x) {
+          let y = x.left;
+          x.left = y.right;
+          if (y.right) y.right.parent = x;
+          y.parent = x.parent;
+          if (!x.parent) {
+            this.root = y;
+          } else if (x === x.parent.right) {
+            x.parent.right = y;
+          } else {
+            x.parent.left = y;
+          }
+          y.right = x;
+          x.parent = y;
+        }
+
+        remove(key) {
+          this.root = this._deleteNode(this.root, key);
+          if (this.root) this.root.color = BLACK;
+        }
+
+        _deleteNode(root, key) {
+          if (!root) return null;
+          if (key < root.key) {
+            root.left = this._deleteNode(root.left, key);
+          } else if (key > root.key) {
+            root.right = this._deleteNode(root.right, key);
+          } else {
+            if (!root.left && !root.right) {
+              return null;
+            } else if (!root.left) {
+              let temp = root.right;
+              temp.parent = root.parent;
+              return temp;
+            } else if (!root.right) {
+              let temp = root.left;
+              temp.parent = root.parent;
+              return temp;
+            } else {
+              let successor = this._min(root.right);
+              root.key = successor.key;
+              root.right = this._deleteNode(root.right, successor.key);
+            }
+          }
+          return root;
+        }
+
+        _min(node) {
+          while (node.left) node = node.left;
+          return node;
+        }
+
+        updatePositions(node, x, y, spacing) {
+          if (!node) return;
+          node.targetX = x;
+          node.targetY = y;
+          node.updatePosition();
+
+          if (node.left)
+            this.updatePositions(node.left, x - spacing, y + 60, spacing * 0.5);
+          if (node.right)
+            this.updatePositions(
+              node.right,
+              x + spacing,
+              y + 60,
+              spacing * 0.5
+            );
+        }
+
+        display(node) {
+          fill(node.color === RED ? "red" : "black");
+          stroke(0);
+          strokeWeight(1);
+          ellipse(node.x, node.y, 30);
+          fill(255);
+          noStroke();
+          textAlign(CENTER, CENTER);
+          textSize(12);
+          text(node.key, node.x, node.y);
+
+          stroke(0);
+          if (node.left) {
+            line(node.x, node.y, node.left.x, node.left.y);
+            this.display(node.left);
+          }
+          if (node.right) {
+            line(node.x, node.y, node.right.x, node.right.y);
+            this.display(node.right);
+          }
+        }
+      }
+    </script>
+    <strong style="margin-top: 10px"
+      >by resomang <a href="https://github.com/somangagain">Github</a></strong
+    >
+  </body>
+</html>
