@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>인터넷의 심화 이해</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>인터넷의 심화 이해</h2>
+      </header>
+
+      <article class="post-content">
+        <h3>목차</h3>
+        <ul>
+          <li>인터넷의 구조와 네트워크 기술</li>
+          <li>패킷 스위칭과 서킷 스위칭 상세 비교</li>
+          <li>네트워크 프로토콜과 계층적 모델 심화</li>
+          <li>주요 네트워크 프로토콜의 깊이 있는 이해</li>
+          <li>요약 및 효과적인 학습 방법</li>
+        </ul>
+        <hr />
+
+        <h2>인터넷의 구조와 네트워크 기술</h2>
+        <p>
+          인터넷은 전 세계의 수많은 컴퓨터와 디바이스가 연결된 매우 거대한
+          네트워크입니다. 우리가 매일 사용하는 이메일, 웹사이트, 영상 스트리밍
+          서비스 모두 인터넷이라는 인프라를 통해 작동합니다. 이렇게 인터넷을
+          구성하는 요소는 크게 <strong>액세스 네트워크</strong>와
+          <strong>코어 네트워크</strong>로 나눌 수 있습니다.
+        </p>
+
+        <h3>액세스 네트워크</h3>
+        <p>
+          액세스 네트워크는 사용자의 장치가 인터넷에 접근하는 경로입니다. 우리가
+          집에서 사용하는 Wi-Fi 공유기나, 스마트폰에서 사용하는 이동통신
+          데이터(4G, 5G) 네트워크가 대표적입니다.
+        </p>
+        <p>
+          액세스 네트워크는 크게 <strong>유선</strong>과
+          <strong>무선</strong>으로 나눌 수 있습니다. 유선 네트워크는 광섬유나
+          동 coax 케이블 등을 통해 빠르고 안정적인 속도를 제공하며, 무선
+          네트워크는 이동성과 편리성을 제공합니다. 액세스 네트워크는 사용자와
+          인터넷 사이의 첫 번째 연결점으로, 데이터의 속도와 품질에 직접적인
+          영향을 줍니다.
+        </p>
+
+        <h3>코어 네트워크</h3>
+        <p>
+          코어 네트워크는 전 세계에 흩어진 수많은 액세스 네트워크를 연결하는
+          역할을 합니다. 고속의 대역폭을 가진 백본 회선과 이를 관리하는 라우터로
+          이루어져 있으며, 데이터를 목적지까지 가장 빠르고 효율적으로 전달하는
+          역할을 수행합니다.
+        </p>
+        <p>
+          이를 위해 코어 네트워크는 다양한 라우팅 기술과 프로토콜을 사용합니다.
+          예를 들어, <abbr title="Border Gateway Protocol">BGP</abbr>(Border
+          Gateway Protocol)는 전 세계의 ISP 사이에서 사용되는 라우팅 프로토콜로,
+          데이터가 최적의 경로를 통해 목적지에 도달하도록 합니다. 또 다른 라우팅
+          프로토콜인 <abbr title="Open Shortest Path First">OSPF</abbr>(Open
+          Shortest Path First)는 하나의 네트워크 내부에서 효율적으로 경로를
+          결정하는 역할을 합니다.
+        </p>
+
+        <h2>패킷 스위칭과 서킷 스위칭 상세 비교</h2>
+        <p>
+          인터넷은 데이터를 보내기 위한 방법으로 주로
+          <strong>패킷 스위칭</strong> 방식을 사용합니다. 이 방식은 데이터를
+          작은 패킷으로 나누어 각각 독립적으로 경로를 통해 목적지까지
+          전달합니다.
+        </p>
+        <p>
+          각각의 패킷은 네트워크 상태에 따라 최적의 경로로 이동하며, 중간 경로에
+          문제가 생겨도 다른 경로로 우회할 수 있습니다. 따라서 네트워크 자원을
+          매우 효율적으로 활용할 수 있습니다. 그러나 각 패킷이 다른 경로를 통해
+          전달되기 때문에 도착 시간이 일정하지 않아 지연이 발생할 수 있으며,
+          패킷이 분실될 가능성도 있습니다. 이를 해결하기 위해 인터넷에서는
+          <abbr title="Transmission Control Protocol">TCP</abbr>와 같은
+          프로토콜을 사용하여 패킷의 분실을 확인하고 다시 전송하는 과정을
+          수행합니다.
+        </p>
+        <p>
+          <strong>서킷 스위칭</strong> 방식은 데이터를 보내기 전에 전용 경로를
+          미리 설정하여 통신을 진행합니다. 전화망에서 흔히 볼 수 있는 방식으로,
+          미리 정해진 경로를 통해 데이터를 전송하므로 일정한 품질과 지연 시간을
+          유지할 수 있습니다. 그러나 서킷 스위칭 방식은 특정 경로를 다른
+          사용자가 공유할 수 없기 때문에 자원 활용 효율성이 떨어지며, 많은
+          사용자들이 동시에 사용할 때는 전체 네트워크의 성능이 저하될 수
+          있습니다.
+        </p>
+
+        <h2>네트워크 프로토콜과 계층적 모델 심화</h2>
+        <p>
+          네트워크 <strong>프로토콜</strong>이란 데이터가 올바르게 전달되도록
+          미리 정해놓은 통신 규칙입니다. 인터넷과 같은 복잡한 시스템에서는
+          이러한 프로토콜을 체계적으로 관리하기 위해
+          <strong>계층적 모델</strong>을 사용합니다. 대표적인 모델은
+          <strong>OSI 모델</strong>과 <strong>TCP/IP 모델</strong>입니다.
+        </p>
+
+        <h3>OSI 모델</h3>
+        <p>
+          OSI(Open Systems Interconnection) 모델은 네트워크 통신 과정을 7개의
+          계층으로 나누어 정의한 이론적 모델입니다. 이 모델은 <em>응용</em>,
+          <em>표현</em>, <em>세션</em>, <em>전송</em>, <em>네트워크</em>,
+          <em>데이터 링크</em>, <em>물리</em> 계층으로 구성됩니다. 각 계층은
+          특정한 역할을 담당하며, 상위 계층은 하위 계층의 서비스를 이용하여
+          데이터를 전송합니다.
+        </p>
+
+        <h3>TCP/IP 모델</h3>
+        <p>
+          TCP/IP 모델은 인터넷에서 실제로 사용되는 프로토콜 구조로, OSI 모델보다
+          간단한 4개의 계층(<em>응용</em>, <em>전송</em>, <em>인터넷</em>,
+          <em>네트워크 인터페이스</em>)으로 구성됩니다. 특히 인터넷 계층의
+          <strong>IP</strong> 프로토콜과 전송 계층의
+          <strong>TCP/UDP</strong> 프로토콜이 핵심적인 역할을 수행합니다.
+        </p>
+
+        <h2>주요 네트워크 프로토콜의 깊이 있는 이해</h2>
+        <h3>TCP (Transmission Control Protocol)</h3>
+        <p>
+          TCP는 신뢰성 있는 데이터 전송을 보장하는 프로토콜입니다. 흐름
+          제어(Flow Control)와 혼잡 제어(Congestion Control)를 통해 네트워크
+          상태에 따라 전송 속도를 조정합니다.
+        </p>
+
+        <h3>UDP (User Datagram Protocol)</h3>
+        <p>
+          UDP는 빠른 전송을 위해 검증·재전송 과정을 생략합니다. 따라서 실시간
+          스트리밍이나 게임 같이 지연이 중요한 서비스에 적합합니다.
+        </p>
+
+        <h3>HTTP/HTTPS</h3>
+        <p>
+          HTTP는 웹 페이지 요청/응답을 처리하는 프로토콜이며, HTTPS는 HTTP에
+          <abbr title="Transport Layer Security">TLS</abbr> 암호화를 적용해
+          보안을 강화한 형태입니다.
+        </p>
+
+        <h3>DNS (Domain Name System)</h3>
+        <p>
+          DNS는 사람이 읽기 쉬운 도메인 이름을 컴퓨터가 인식할 수 있는 IP 주소로
+          변환하는 인터넷의 <em>주소록</em> 역할을 합니다.
+        </p>
+
+        <h2>요약 및 효과적인 학습 방법</h2>
+        <p>
+          인터넷은 다양한 기술과 프로토콜이 복잡하게 얽혀 있는 시스템입니다.
+          데이터 전송 원리와 프로토콜의 역할을 명확히 이해하면 네트워크 기술
+          학습이 훨씬 수월해집니다.
+        </p>
+
+        <h3>학습 팁</h3>
+        <ul>
+          <li>
+            Wireshark로 실제 트래픽을 캡처해 프로토콜 동작을 관찰해 보세요.
+          </li>
+          <li>
+            Python <code>socket</code> 라이브러리로 간단한 클라이언트/서버
+            프로그램을 작성해 보세요.
+          </li>
+          <li>관련 RFC 문서를 읽으면서 프로토콜 설계 의도를 파악해 보세요.</li>
+        </ul>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

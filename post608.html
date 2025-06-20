@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>링크 계층의 실전 사례와 설계 고려사항</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>링크 계층의 실전 사례와 설계 고려사항</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>실전 사례: 웹 요청 시 링크 계층 동작</li>
+          <li>유선 vs 무선 링크 계층의 차이</li>
+          <li>LAN 설계 시 고려사항 (VLAN, 스패닝 트리 등)</li>
+          <li>신뢰성과 효율의 균형 (오류율 vs 속도 설계)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="실전-웹-요청">실전 사례: 웹 요청 시 링크 계층 동작</h2>
+        <p>
+          웹 요청 시 링크 계층은 ARP를 통한 MAC 주소 확인, 프레임 생성 및 전송,
+          스위치 및 라우터를 거친 데이터 전달 등 다양한 역할을 수행합니다. 각
+          홉에서 ARP, 프레임 포맷, 전송이 반복됩니다.
+        </p>
+
+        <h2 id="유선-무선-차이">유선 vs 무선 링크 계층의 차이</h2>
+        <p>
+          유선은 안정적 전송과 낮은 오류율, 무선은 충돌 회피, ACK 기반 신뢰성
+          확보 등 특성이 다르며, CSMA/CD와 CSMA/CA 등의 프로토콜을 활용합니다.
+        </p>
+
+        <h2 id="lan-설계">LAN 설계 시 고려사항</h2>
+        <ul>
+          <li>VLAN으로 브로드캐스트 도메인 관리</li>
+          <li>STP로 루프 방지, 이중화 구현</li>
+          <li>포트 보안, 트렁크, 링크 집합 등</li>
+          <li>QoS로 지연 민감 트래픽 우선 처리</li>
+        </ul>
+
+        <h2 id="신뢰-효율-균형">신뢰성과 효율의 균형 (오류율 vs 속도 설계)</h2>
+        <p>
+          링크 계층 설계 시 CRC, FEC, ARQ 등 기술을 상황에 맞게 적용해 오류
+          처리와 효율을 균형 있게 고려해야 합니다.
+        </p>
+
+        <h2 id="요약-팁">요약 및 학습 팁</h2>
+        <p>
+          <strong>요약:</strong> 링크 계층은 눈에 보이지 않지만 필수적인 데이터
+          전달 역할을 하며, 설계 시 확장성, 신뢰성, 효율, 보안을 종합적으로
+          고려해야 합니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> 웹 요청 시 링크 계층 흐름을 그리거나, 공유기 관리자
+          페이지에서 관련 설정을 살펴보며 개념을 익히세요.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

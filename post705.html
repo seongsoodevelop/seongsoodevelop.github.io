@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>모바일 사용자의 주소 설정 및 라우팅 원리</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>모바일 사용자의 주소 설정 및 라우팅 원리</h2>
+      </header>
+
+      <article class="post-content">
+        <h3>목차</h3>
+        <ul>
+          <li>이동 환경에서의 주소 지정 문제</li>
+          <li>홈 네트워크와 방문 네트워크 개념</li>
+          <li>간접 라우팅 방식 (홈 에이전트를 통한 통신)</li>
+          <li>직접 라우팅 방식 (송신자의 위치 파악 및 통신)</li>
+        </ul>
+
+        <h3>이동 환경에서의 주소 지정 문제</h3>
+        <p>
+          이동 중 IP 주소가 네트워크 변경에 따라 바뀌면 기존 세션이 끊기는
+          문제가 발생합니다. 이를 해결하기 위해 주소를 고정하고 네트워크가
+          전달을 책임지거나, 주소가 바뀔 때마다 송신자에게 새 주소를 알리는
+          방식이 사용됩니다. 각각은 간접, 직접 라우팅 방식과 연결됩니다.
+        </p>
+
+        <h3>홈 네트워크와 방문 네트워크 개념</h3>
+        <p>
+          홈 네트워크는 모바일 노드의 영구 IP를 부여한 네트워크이며, 방문
+          네트워크는 현재 접속 중인 다른 네트워크입니다. 홈 에이전트는 노드의
+          이동 상태를 관리하고, 케어-오브-주소(COA)는 방문지 임시 주소로
+          사용됩니다.
+        </p>
+
+        <h3>간접 라우팅 방식</h3>
+        <p>
+          송신자가 이동 노드의 홈 주소로 패킷을 보내면 홈 에이전트가 이를
+          수신하여 현재 COA로 캡슐화하여 전달합니다. 송신자 입장에선 노드가
+          이동했는지 알 필요가 없으며, 홈을 거치는 삼각 라우팅 경로가
+          형성됩니다.
+        </p>
+
+        <h3>직접 라우팅 방식</h3>
+        <p>
+          송신자가 홈 에이전트로부터 이동 노드의 COA를 받아 이후 직접 해당
+          주소로 패킷을 보냅니다. 경로가 최적화되지만 송신자가 노드 위치를
+          인지하고 따라야 하며, 동기화가 복잡해집니다.
+        </p>
+
+        <h3>요약 및 학습 팁</h3>
+        <p>
+          <strong>요약:</strong> 모바일 사용자의 주소와 라우팅은 홈/방문
+          네트워크 구분과 간접/직접 방식의 차이로 이해할 수 있습니다. 간접은
+          주소 투명성을, 직접은 최적 경로를 제공합니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> 주소 forwarding 우편 비유를 떠올리거나, 간접/직접
+          흐름도를 직접 그려보고, 키워드 카드 작성과 자문자답을 통해 개념을
+          정리해 보세요.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

@@ -1,121 +1,875 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>김성수의 네트워크 블로그</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Pretendard', sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-      background-color: #f9f9fb;
-      color: #333;
-    }
-    header {
-      background-color: #2d3748;
-      color: white;
-      padding: 2rem 1rem;
-      text-align: center;
-    }
-    header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-    main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    section {
-      background: white;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
-    h2 {
-      color: #2c5282;
-      margin-bottom: 0.8rem;
-    }
-    .profile-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    .profile-card {
-      background-color: #f1f5f9;
-      padding: 1rem;
-      border-radius: 0.75rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-    }
-    .profile-card h3 {
-      margin-top: 0;
-      color: #1a202c;
-    }
-    a {
-      color: #3182ce;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      color: #666;
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>김성수의 블로그</h1>
-    <p>컴퓨터와 휴먼이 네트워크되는 공간</p>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>김성수의 블로그</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --transition: 0.2s ease;
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.75rem;
+        font-weight: 600;
+      }
+      .tagline {
+        margin-top: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 300;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      section + section {
+        margin-top: 3rem;
+      }
+      section > h2 {
+        margin-top: 0;
+        color: var(--color-primary);
+      }
+      .profile-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+      .profile-card {
+        background: var(--color-surface);
+        border-radius: 0.75rem;
+        box-shadow: var(--shadow-sm);
+        padding: 1rem 1.25rem;
+      }
+      .profile-card h3 {
+        margin-top: 0;
+        color: var(--color-text);
+      }
+      .posts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .post-card {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 1.25rem 1.5rem;
+        transition: transform var(--transition), box-shadow var(--transition);
+      }
+      .post-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+      }
+      .post-card h3 {
+        margin: 0 0 0.4rem;
+        font-size: 1.15rem;
+        color: var(--color-primary);
+      }
+      .post-card p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+      <p class="tagline">컴퓨터와 휴먼이 네트워크되는 공간</p>
+    </header>
 
-  <main>
-    <section>
-      <h2>👤 자기 소개</h2>
-      <p>안녕하세요. 단국대학교 소프트웨어학과 재학 중인 김성수입니다. 사회적 문제를 찾아가 지식과 기술을 이용해 푸는 것을 좋아합니다. 항상 더 나은 해결책을 찾기 위해 애쓰고, 실력을 키우기 위해 꾸준히 노력합니다.</p>
-    </section>
+    <main class="container">
+      <!-- ===== 자기소개 ===== -->
+      <section>
+        <h2>👤 자기 소개</h2>
+        <p>
+          안녕하세요. 단국대학교 소프트웨어학과 재학 중인 김성수입니다. 사회적
+          문제를 찾아가 지식과 기술을 이용해 푸는 것을 좋아합니다. 항상 더 나은
+          해결책을 찾기 위해 애쓰고, 실력을 키우기 위해 꾸준히 노력합니다.
+        </p>
+      </section>
 
-    <section>
-      <h2>👥 지인 소개</h2>
-      <div class="profile-grid">
-        <div class="profile-card">
-          <h3>강준영</h3>
-          <p>독서, 영화 시청, 스포츠 게임 등을 즐기며, 인공지능 자율주행의 미래와 컴퓨터 운영체제에 관심이 많습니다. 작년에도 이상범 교수님의 수업을 수강했고, 블로그 과제를 성실히 수행했습니다. 현재는 졸업 준비와 실무 프로젝트에 집중하고 있습니다.</p>
+      <!-- ===== 지인 소개 (행) ===== -->
+      <section>
+        <h2>👥 지인 소개</h2>
+        <div class="profile-list">
+          <div class="profile-card">
+            <h3>강준영</h3>
+            <p>
+              독서, 영화 시청, 스포츠 게임 등을 즐기며, 인공지능 자율주행의
+              미래와 컴퓨터 운영체제에 관심이 많습니다. 작년에도 이상범 교수님의
+              수업을 수강했고, 블로그 과제를 성실히 수행했습니다. 현재는 졸업
+              준비와 실무 프로젝트에 집중하고 있습니다.
+            </p>
+          </div>
+          <div class="profile-card">
+            <h3>강유진</h3>
+            <p>
+              21학번 정치외교학과 전공, 소프트웨어학과 복수전공 중입니다.
+              "젊어서 고생은 사서도 한다"는 좌우명을 가지고 있으며, 배낭여행과
+              고전 독서를 즐깁니다. 탄자니아 디지털 봉사, 서당 활동, 앱 기획
+              경험이 있으며, Flutter로 노인을 위한 택시 앱 개발의 백엔드 파트를
+              맡고 있습니다.
+            </p>
+          </div>
+          <div class="profile-card">
+            <h3>권민지</h3>
+            <p>
+              23학번 소프트웨어학과 재학생입니다. 최근 보안에 관심을 가지며 보안
+              관련 수업과 스터디에 적극 참여하고 있습니다. 취미는 소설 읽기이며,
+              SF 장르에 흥미를 느껴 탐독 중입니다.
+            </p>
+          </div>
+          <div class="profile-card">
+            <h3>이상범 교수님</h3>
+            <p>
+              컴퓨터 네트워크 수업을 담당하시며, 네트워크 구조와 TCP/IP
+              프로토콜에 깊은 전문 지식을 갖추신 지도 교수님입니다.
+            </p>
+          </div>
         </div>
-        <div class="profile-card">
-          <h3>강유진</h3>
-          <p>21학번 정치외교학과 전공, 소프트웨어학과 복수전공 중입니다. "젊어서 고생은 사서도 한다"는 좌우명을 가지고 있으며, 배낭여행과 고전 독서를 즐깁니다. 탄자니아 디지털 봉사, 서당 활동, 앱 기획 경험이 있으며, Flutter로 노인을 위한 택시 앱 개발의 백엔드 파트를 맡고 있습니다.</p>
-        </div>
-        <div class="profile-card">
-          <h3>권민지</h3>
-          <p>23학번 소프트웨어학과 재학생입니다. 최근 보안에 관심을 가지며 보안 관련 수업과 스터디에 적극 참여하고 있습니다. 취미는 소설 읽기이며, SF 장르에 흥미를 느껴 탐독 중입니다.</p>
-        </div>
-        <div class="profile-card">
-          <h3>이상범 교수님</h3>
-          <p>컴퓨터 네트워크 수업을 담당하시며, 네트워크 구조와 TCP/IP 프로토콜에 깊은 전문 지식을 갖추신 지도 교수님입니다.</p>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section>
-      <h2>📚 컴퓨터 네트워크 강의 정리</h2>
-      <ul>
-        <li><a href="ch01.html">Chapter 1: 컴퓨터 네트워크와 인터넷</a></li>
-        <li><a href="ch02.html">Chapter 2: 어플리케이션 계층</a></li>
-        <li><a href="ch03.html">Chapter 3: 전송 계층</a></li>
-      </ul>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 김성수. All rights reserved.</p>
-  </footer>
-</body>
+      <!-- ===== 글 목록 (행) ===== -->
+      <section>
+        <h2>📚 최신 글</h2>
+        <div class="posts-list">
+          <article class="post-card">
+            <h3>
+              <a href="post101.html">인터넷의 심화 이해 </a>
+            </h3>
+            <ul>
+              <li>인터넷의 구조와 네트워크 기술</li>
+              <li>패킷 스위칭과 서킷 스위칭 상세 비교</li>
+              <li>네트워크 프로토콜과 계층적 모델 심화</li>
+              <li>주요 네트워크 프로토콜의 깊이 있는 이해</li>
+              <li>요약 및 효과적인 학습 방법</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post102.html"
+                >네트워크의 가장자리: 사용자, 액세스 네트워크와 물리 매체의 심화
+                탐구</a
+              >
+            </h3>
+            <ul>
+              <li>네트워크 가장자리의 개념과 실제 사례</li>
+              <li>액세스 네트워크의 종류 및 특징 심화</li>
+              <li>물리적 매체의 기술적 이해와 장단점</li>
+              <li>요약</li>
+              <li>학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post103.html"
+                >네트워크 코어: 패킷 교환과 회선 교환 심화 탐구</a
+              >
+            </h3>
+            <ul>
+              <li>네트워크 코어와 라우터의 깊은 이해</li>
+              <li>패킷 교환 방식의 상세한 작동 원리</li>
+              <li>회선 교환 방식의 기술적 특징과 실제 사례</li>
+              <li>인터넷의 구조: ISP와 계층적 네트워크</li>
+              <li>요약 및 효과적인 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post104.html"
+                >네트워크 성능 심화 탐구: 지연, 손실, 처리율의 이해</a
+              >
+            </h3>
+            <ul>
+              <li>네트워크 지연의 깊은 이해</li>
+              <li>패킷 손실의 원인과 완화 방법</li>
+              <li>처리율과 병목 링크의 심층 분석</li>
+              <li>요약</li>
+              <li>효과적인 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post105.html">프로토콜 계층과 서비스 모델의 심화 탐구</a>
+            </h3>
+            <ul>
+              <li>소켓과 네트워크 API 소개</li>
+              <li>UDP 소켓 프로그래밍 예시</li>
+              <li>TCP 소켓 프로그래밍 예시</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post106.html"
+                >네트워크 보안과 역사: 인터넷의 과제 심화 탐구</a
+              >
+            </h3>
+            <ul>
+              <li>인터넷의 보안 위협 및 공격 유형 상세 분석</li>
+              <li>네트워크 보안 방어 기술 심화 탐구</li>
+              <li>인터넷 역사와 발전 과정의 상세한 고찰</li>
+              <li>요약</li>
+              <li>효과적인 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post201.html">네트워크 애플리케이션의 원리</a>
+            </h3>
+            <ul>
+              <li>네트워크 애플리케이션 계층 소개</li>
+              <li>네트워크 애플리케이션 개발 원리</li>
+              <li>프로세스 통신과 소켓</li>
+              <li>애플리케이션 프로토콜과 통신 규약</li>
+              <li>트랜스포트 서비스 요구사항과 프로토콜 선택</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post202.html">클라이언트-서버 및 P2P 아키텍처</a>
+            </h3>
+            <ul>
+              <li>클라이언트-서버 아키텍처</li>
+              <li>P2P 아키텍처</li>
+              <li>하이브리드 모델과 클라우드 컴퓨팅</li>
+              <li>아키텍처 별 장단점 비교</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post203.html">웹과 HTTP</a>
+            </h3>
+            <ul>
+              <li>웹과 HTTP 개요</li>
+              <li>HTTP 요청과 응답 메시지</li>
+              <li>비지속성 연결 vs 지속성 연결</li>
+              <li>쿠키를 통한 상태 유지</li>
+              <li>웹 캐시와 프록시 서버</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post204.html">전자 메일: SMTP, POP3, IMAP</a>
+            </h3>
+            <ul>
+              <li>인터넷 전자메일 시스템 개요</li>
+              <li>SMTP 프로토콜을 통한 메일 전송</li>
+              <li>전자메일 메시지 형식과 MIME</li>
+              <li>POP3와 IMAP: 메일 액세스 프로토콜</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post205.html">DNS (도메인 이름 시스템)</a>
+            </h3>
+            <ul>
+              <li>DNS 개요와 역할</li>
+              <li>DNS의 계층적 구조</li>
+              <li>도메인 이름 해석 과정</li>
+              <li>DNS 레코드 종류와 메시지 형식</li>
+              <li>DNS 캐싱과 갱신 메커니즘</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post206.html">P2P 애플리케이션과 파일 공유</a>
+            </h3>
+            <ul>
+              <li>P2P 파일 공유 개요와 역사</li>
+              <li>파일 분배: 클라이언트-서버 vs P2P 비교</li>
+              <li>BitTorrent 프로토콜의 동작 방식</li>
+              <li>기타 P2P 응용 사례</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post207.html">비디오 스트리밍 및 CDN</a>
+            </h3>
+            <ul>
+              <li>인터넷 비디오 스트리밍 개요</li>
+              <li>적응형 스트리밍 (DASH)의 원리</li>
+              <li>콘텐츠 전송 네트워크(CDN)의 개념</li>
+              <li>CDN의 동작 방식과 사례</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post208.html">소켓 프로그래밍 (TCP와 UDP)</a>
+            </h3>
+            <ul>
+              <li>소켓과 네트워크 API 소개</li>
+              <li>UDP 소켓 프로그래밍 예시</li>
+              <li>TCP 소켓 프로그래밍 예시</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post301.html">전송 계층의 개요 및 서비스</a>
+            </h3>
+            <ul>
+              <li>논리적 통신</li>
+              <li>TCP와 UDP</li>
+              <li>애플리케이션 간 통신</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post302.html">다중화와 역다중화</a>
+            </h3>
+            <ul>
+              <li>다중화 (Multiplexing)</li>
+              <li>역다중화 (Demultiplexing)</li>
+              <li>포트 번호와 소켓</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post303.html">비연결형 전송: UDP 및 체크섬</a>
+            </h3>
+            <ul>
+              <li>UDP의 특징</li>
+              <li>UDP 세그먼트 구조</li>
+              <li>UDP 체크섬</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post304.html"
+                >신뢰성 있는 전송과 rdt 프로토콜(rdt1.0 ~ rdt3.0)</a
+              >
+            </h3>
+            <ul>
+              <li>신뢰성 있는 전송의 원리</li>
+              <li>rdt 1.0</li>
+              <li>rdt 2.0</li>
+              <li>rdt 2.1 및 rdt 2.2</li>
+              <li>rdt 3.0</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post305.html">연결형 전송 – TCP의 구조와 연결 설정</a>
+            </h3>
+            <ul>
+              <li><a href="#tcp-feature">TCP의 특징</a></li>
+              <li><a href="#tcp-header">TCP 세그먼트 구조</a></li>
+              <li><a href="#handshake">TCP의 연결 설정(3-way handshake)</a></li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post306.html">흐름 제어와 혼잡 제어</a>
+            </h3>
+            <ul>
+              <li><a href="#flow">흐름 제어</a></li>
+              <li><a href="#congestion">혼잡 제어의 개념</a></li>
+              <li><a href="#tcp-cc">TCP의 혼잡 제어 방식</a></li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post307.html"
+                >파이프라이닝과 GBN · Selective Repeat의 동작 및 성능 비교</a
+              >
+            </h3>
+            <ul>
+              <li><a href="#pipelining">파이프라이닝</a></li>
+              <li><a href="#gbn">Go-Back-N (GBN)</a></li>
+              <li><a href="#sr">Selective Repeat</a></li>
+              <li><a href="#compare">GBN vs Selective Repeat 비교</a></li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post401.html"
+                >데이터 플레인과 제어 플레인 개념, 그리고 라우터의 내부 구조</a
+              >
+            </h3>
+            <ul>
+              <li>
+                <a href="#데이터-플레인-vs-제어-플레인"
+                  >데이터 플레인 vs 제어 플레인</a
+                >
+              </li>
+              <li><a href="#라우터-내부-구조">라우터 내부 구조</a></li>
+              <li><a href="#요약-및-학습-팁">요약 및 학습 팁</a></li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post402.html"
+                >IP 데이터그램 구조와 단편화, 그리고 IP 전송 방식</a
+              >
+            </h3>
+            <ul>
+              <li>네트워크 관리 개요와 SNMP의 역할</li>
+              <li>SNMP 아키텍처 (관리 시스템, 에이전트, MIB)</li>
+              <li>SNMP 동작 방식 (Get/Set 요청과 Trap 알림)</li>
+              <li>멀티캐스트 통신 개념과 IGMP</li>
+              <li>멀티캐스트 라우팅 방식 (소스 기반 트리 vs 공유 트리)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post403.html">IP 주소 체계 (IPv4, 서브넷, CIDR, DHCP)</a>
+            </h3>
+            <ul>
+              <li><a href="#ipv4-주소와-서브넷">IPv4 주소와 서브넷</a></li>
+              <li>
+                <a href="#cidr-클래스리스-주소">CIDR (클래스리스 주소)</a>
+              </li>
+              <li>
+                <a href="#dhcp-프로토콜과-ip-할당">DHCP 프로토콜과 IP 할당</a>
+              </li>
+              <li><a href="#요약-및-학습-팁-2">요약 및 학습 팁</a></li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post404.html">NAT와 IPv6, IPv4의 한계와 전환 방식</a>
+            </h3>
+            <ul>
+              <li>
+                <a href="#nat-network-address-translation"
+                  >NAT (Network Address Translation)</a
+                >
+              </li>
+              <li>
+                <a href="#ipv6와-ipv4의-한계-극복">IPv6와 IPv4의 한계 극복</a>
+              </li>
+              <li>
+                <a href="#ipv4에서-ipv6로의-전환-방법"
+                  >IPv4에서 IPv6로의 전환 방법</a
+                >
+              </li>
+              <li><a href="#요약-및-학습-팁-3">요약 및 학습 팁</a></li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post501.html"
+                >라우팅 프로토콜 개요 (링크 상태·거리 벡터)</a
+              >
+            </h3>
+            <ul>
+              <li>라우팅 프로토콜의 역할과 분류 (정적 vs 동적)</li>
+              <li>링크 상태 라우팅 알고리즘 개념과 예시</li>
+              <li>거리 벡터 라우팅 알고리즘 개념과 예시</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post502.html">인터넷 내 라우팅: OSPF</a>
+            </h3>
+            <ul>
+              <li>OSPF 개요 및 특징 (링크 상태 프로토콜)</li>
+              <li>OSPF의 동작 원리 (LSA 홍수, 다익스트라 알고리즘)</li>
+              <li>계층적 OSPF (Area로 나눈 구조)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post503.html">ISP 간 라우팅: BGP</a>
+            </h3>
+            <ul>
+              <li>BGP 개요 및 역할 (인터넷의 경계 게이트웨이 프로토콜)</li>
+              <li>BGP 동작 원리 (eBGP와 iBGP, 경로 벡터 방식)</li>
+              <li>BGP의 경로 속성과 정책 (AS-PATH, NEXT-HOP, 수렴 예시)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post504.html">제어 플레인 방식 (분산형 vs 중앙집중형)</a>
+            </h3>
+            <ul>
+              <li>전통적 분산 제어 플레인 (Per-Router Control) 개념</li>
+              <li>논리적 중앙집중형 제어 플레인 (SDN) 개념</li>
+              <li>두 방식의 비교와 트래픽 제어 예시</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post505.html">SDN 제어 플레인 및 OpenFlow</a>
+            </h3>
+            <p></p>
+            <ul>
+              <li>SDN이란? (소프트웨어 정의 네트워킹 개념)</li>
+              <li>
+                SDN 아키텍처 (컨트롤러, 데이터 플레인 스위치,
+                northbound/southbound API)
+              </li>
+              <li>
+                OpenFlow 프로토콜과 플로우 테이블 (메시지 종류와 매치-액션 구조)
+              </li>
+              <li>SDN 활용 예시와 실제 구현 (OpenDaylight 등)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post506.html">ICMP: 인터넷 제어 메시지 프로토콜</a>
+            </h3>
+            <ul>
+              <li>ICMP의 탄생 배경 (IP의 한계 보완)</li>
+              <li>ICMP의 역할과 종류 (에러 보고 메시지, 질의 메시지)</li>
+              <li>Ping과 Traceroute 예시로 보는 ICMP 동작</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post507.html"
+                >네트워크 관리: SNMP 및 멀티캐스트 라우팅</a
+              >
+            </h3>
+            <ul>
+              <li>네트워크 관리 개요와 SNMP의 역할</li>
+              <li>SNMP 아키텍처 (관리 시스템, 에이전트, MIB)</li>
+              <li>SNMP 동작 방식 (Get/Set 요청과 Trap 알림)</li>
+              <li>멀티캐스트 통신 개념과 IGMP</li>
+              <li>멀티캐스트 라우팅 방식 (소스 기반 트리 vs 공유 트리)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post601.html">데이터 링크 계층 개요 및 기능</a>
+            </h3>
+            <ul>
+              <li>데이터 링크 계층의 정의와 역할</li>
+              <li>
+                데이터 링크 계층의 주요 기능 (프레이밍, 오류 제어, 흐름 제어 등)
+              </li>
+              <li>데이터 링크 계층의 구현 (NIC)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post602.html"
+                >데이터 링크 계층: 오류 검출 및 수정 방식</a
+              >
+            </h3>
+            <ul>
+              <li>오류 검출의 필요성과 개요</li>
+              <li>패리티 검사 방식 (단순 패리티 및 2차원 패리티)</li>
+              <li>순환 중복 검사(CRC) 방식</li>
+              <li>오류 수정 방법 개요 (FEC, 해밍 코드 등)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post603.html">오류 검출 및 수정 방식 (패리티, CRC 등)</a>
+            </h3>
+            <ul>
+              <li>오류 검출의 필요성과 개요</li>
+              <li>패리티 검사 방식 (단순 패리티 및 2차원 패리티)</li>
+              <li>순환 중복 검사(CRC) 방식</li>
+              <li>오류 수정 방법 개요 (FEC, 해밍 코드 등)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post604.html">다중 접근 프로토콜: ALOHA, CSMA 등</a>
+            </h3>
+            <ul>
+              <li>다중 접근 프로토콜의 개념 (공유 매체에서의 충돌 문제)</li>
+              <li>ALOHA 프로토콜 (순수 ALOHA와 슬롯 ALOHA)</li>
+              <li>CSMA/CD 프로토콜 (이더넷의 충돌 감지 다중 접근)</li>
+              <li>충돌 사례 예시 (두 노드 동시 전송 시나리오)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post605.html">이더넷과 MAC 주소, 주소 학습</a>
+            </h3>
+            <ul>
+              <li>Ethernet의 개요 및 특징</li>
+              <li>Ethernet 프레임 구조와 MAC 주소</li>
+              <li>MAC 주소의 구조와 특성 (48비트 주소, 글로벌 고유성)</li>
+              <li>스위치의 MAC 주소 학습 (주소 테이블 구축 원리)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post606.html">스위치와 링크 계층의 전송 처리</a>
+            </h3>
+            <ul>
+              <li>스위치의 역할과 특징</li>
+              <li>스위치의 프레임 전송 처리 과정</li>
+              <li>필터링, 홍수 및 주소 학습 동작</li>
+              <li>여러 대의 스위치가 있는 경우 (멀티 스위치 네트워크 개요)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post607.html">링크 계층 주소와 ARP</a>
+            </h3>
+            <ul>
+              <li>링크 계층 주소 vs 네트워크 계층 주소</li>
+              <li>ARP 프로토콜의 필요성</li>
+              <li>동일 네트워크에서의 ARP 동작</li>
+              <li>다른 네트워크 간 통신 시 ARP (게이트웨이의 역할)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post608.html">링크 계층의 실전 사례와 설계 고려사항</a>
+            </h3>
+            <ul>
+              <li>실전 사례: 웹 요청 시 링크 계층 동작</li>
+              <li>유선 vs 무선 링크 계층의 차이</li>
+              <li>LAN 설계 시 고려사항 (VLAN, 스패닝 트리 등)</li>
+              <li>신뢰성과 효율의 균형 (오류율 vs 속도 설계)</li>
+              <li>요약 및 학습 팁</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post701.html">무선 및 모바일 네트워크 소개</a>
+            </h3>
+            <ul>
+              <li>무선 네트워크의 성장과 중요성</li>
+              <li>무선 vs 이동성: 두 가지 도전 과제</li>
+              <li>무선 네트워크의 주요 구성 요소</li>
+              <li>인프라 모드와 애드혹 모드 비교</li>
+              <li>무선 네트워크 유형 분류 (단일 홉/다중 홉, 인프라 유무)</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post702.html">무선 링크의 특성과 CDMA</a>
+            </h3>
+            <ul>
+              <li>무선 링크의 물리적 특성 (경로 손실, 간섭 등)</li>
+              <li>신호 대 잡음비 (SNR)와 비트 오류율 (BER) 관계</li>
+              <li>무선 전송률의 동적 조정 (링크 적응)</li>
+              <li>다중 접속의 필요성과 CDMA 개념</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post703.html">IEEE 802.11 무선 LAN (Wi-Fi)</a>
+            </h3>
+            <ul>
+              <li>Wi-Fi 표준의 발전 (802.11a/b/g/n/ac 등)</li>
+              <li>Wi-Fi 네트워크 구조 (BSS와 AP)</li>
+              <li>Wi-Fi 채널과 연결 절차 (스캐닝 및 연합)</li>
+              <li>무선 LAN의 다중 접속 문제 (히든 터미널 등)</li>
+              <li>CSMA/CA 프로토콜과 충돌 회피 (ACK, RTS/CTS)</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post704.html">셀룰러 인터넷 접속</a>
+            </h3>
+            <ul>
+              <li>셀룰러 네트워크와 셀 구조 개요</li>
+              <li>셀룰러 네트워크 구성 요소 (기지국, MSC 등)</li>
+              <li>이동통신 세대별 발전 (1G부터 4G까지)</li>
+              <li>무선 자원 할당 방식 (FDMA/TDMA/CDMA 등의 활용)</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post705.html"
+                >모바일 사용자의 주소 설정 및 라우팅 원리</a
+              >
+            </h3>
+            <ul>
+              <li>이동 환경에서의 주소 지정 문제</li>
+              <li>홈 네트워크와 방문 네트워크 개념</li>
+              <li>간접 라우팅 방식 (홈 에이전트를 통한 통신)</li>
+              <li>직접 라우팅 방식 (송신자의 위치 파악 및 통신)</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post706.html">모바일 IP (Mobile IP)</a>
+            </h3>
+            <ul>
+              <li>Mobile IP 개요와 필요성</li>
+              <li>Mobile IP의 구성 요소</li>
+              <li>이동 노드의 위치 등록 과정</li>
+              <li>패킷 전달 과정 (터널링과 캡슐화)</li>
+              <li>삼각 라우팅 문제와 최적화</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post707.html">셀룰러 네트워크의 이동성 관리</a>
+            </h3>
+            <ul>
+              <li>셀룰러 통신망에서의 이동성 개요</li>
+              <li>위치 등록과 가입자 관리 (HLR/VLR 개념)</li>
+              <li>통화 연결 시의 위치 추적 및 라우팅</li>
+              <li>핸드오프(Handoff) 처리 방식</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post708.html">이동성과 상위 계층 프로토콜</a>
+            </h3>
+            <ul>
+              <li>이동/무선 환경이 상위 계층에 미치는 영향 개요</li>
+              <li>무선 환경의 패킷 손실과 TCP 성능 문제</li>
+              <li>이동 시 연결 지연 및 실시간 서비스 영향</li>
+              <li>제한된 대역폭과 애플리케이션 고려사항</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post801.html">인터넷 위협과 공격 유형</a>
+            </h3>
+            <ul>
+              <li>스니핑 (Sniffing)</li>
+              <li>스푸핑 (Spoofing)</li>
+              <li>세션 하이재킹 (Session Hijacking)</li>
+              <li>서비스 거부 공격 (DoS)</li>
+              <li>분산 서비스 거부 공격 (DDoS)</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post802.html">암호학의 원리</a>
+            </h3>
+            <ul>
+              <li>대칭키 암호화</li>
+              <li>공개키 암호화</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post803.html">인증과 메시지 무결성</a>
+            </h3>
+            <ul>
+              <li>메시지 무결성</li>
+              <li>인증</li>
+              <li>전자 서명</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post804.html">보안 이메일</a>
+            </h3>
+            <ul>
+              <li>이메일 암호화 (기밀성 확보)</li>
+              <li>이메일 인증 및 무결성 (전자 서명 활용)</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post805.html">SSL을 통한 안전한 전송</a>
+            </h3>
+            <ul>
+              <li>SSL/TLS 개요와 기능</li>
+              <li>SSL 핸드셰이크 과정</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post806.html">IPsec를 통한 네트워크 계층 보안</a>
+            </h3>
+            <ul>
+              <li>IPsec의 기능과 활용</li>
+              <li>전송 모드와 터널 모드</li>
+              <li>AH와 ESP 프로토콜</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post807.html">무선 LAN 보안</a>
+            </h3>
+            <ul>
+              <li>WEP의 취약점</li>
+              <li>WPA와 WPA2의 개선</li>
+            </ul>
+          </article>
+          <article class="post-card">
+            <h3>
+              <a href="post808.html">운영 보안: 방화벽과 IDS</a>
+            </h3>
+            <ul>
+              <li>방화벽의 원리와 유형</li>
+              <li>침입 탐지 및 방지 시스템 (IDS/IPS)</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
 </html>

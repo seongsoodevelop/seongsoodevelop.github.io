@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SDN 제어 플레인 및 OpenFlow</title>
+
+    <!-- ▣ 공통 스타일 (기존 글과 동일) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>SDN 제어 플레인 및 OpenFlow</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>SDN이란? (소프트웨어 정의 네트워킹 개념)</li>
+          <li>
+            SDN 아키텍처 (컨트롤러, 데이터 플레인 스위치, northbound/southbound
+            API)
+          </li>
+          <li>
+            OpenFlow 프로토콜과 플로우 테이블 (메시지 종류와 매치-액션 구조)
+          </li>
+          <li>SDN 활용 예시와 실제 구현 (OpenDaylight 등)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="개념-설명">개념 설명</h2>
+        <p>
+          <strong>SDN(Software-Defined Networking)</strong>은 네트워크 장비의
+          제어 기능을 소프트웨어 기반의 중앙 <em>컨트롤러</em>로 일임하는
+          패러다임입니다. 핵심은
+          <strong>제어부와 데이터부의 분리</strong>입니다. 스위치·라우터는
+          데이터 플레인에서 패킷을 빠르게 전달하고, 컨트롤러는
+          <em>네트워크 OS</em>처럼 동작하며 라우팅, 보안, 트래픽 엔지니어링 같은
+          의사결정을 수행합니다.
+        </p>
+
+        <p>SDN 아키텍처는 세 층으로 요약됩니다.</p>
+        <ul>
+          <li>
+            <strong>데이터 플레인</strong> – 단순 포워딩만 수행하는 SDN 스위치
+          </li>
+          <li>
+            <strong>컨트롤러(네트워크 OS)</strong> – 전역 토폴로지를 알고 정책을
+            계산
+          </li>
+          <li>
+            <strong>제어 애플리케이션</strong> – 경로 계산·방화벽·로드밸런싱 등
+            다양한 네트워크 앱
+          </li>
+        </ul>
+
+        <p>
+          컨트롤러와 스위치 사이는
+          <strong>Southbound API(예: OpenFlow)</strong>, 컨트롤러와 상단 앱
+          사이는 <strong>Northbound API(REST, gRPC 등)</strong>로 구분됩니다. 이
+          계층적 구조 덕분에 개발자는 장비 벤더에 구애받지 않고
+          <em>네트워크를 코드로</em> 제어할 수 있습니다.
+        </p>
+
+        <h3>OpenFlow 프로토콜</h3>
+        <p>
+          <strong>OpenFlow</strong>는 가장 보편적인 Southbound 프로토콜입니다.
+          컨트롤러가 스위치의 <em>플로우 테이블(Flow Table)</em>을 원격으로
+          조작할 수 있게 정의된 표준으로, 기본적으로
+          <code>TCP 6633</code> 포트(또는 TLS) 위에서 동작합니다.
+        </p>
+
+        <ul>
+          <li>
+            <em>Controller → Switch 메시지</em>: features request,
+            modify-state(플로우 추가/삭제), packet-out 등
+          </li>
+          <li>
+            <em>Switch → Controller 메시지</em>: packet-in, flow-removed,
+            port-status 등
+          </li>
+          <li>
+            <em>대칭 메시지</em>: Echo, Hello, Barrier 등 유지·동기화 목적
+          </li>
+        </ul>
+
+        <p>
+          스위치는 패킷을 받을 때 플로우 테이블을 조회하여
+          <strong>매치(match) → 액션(action)</strong> 규칙을 적용합니다. 매치
+          항목은 <code>IP/MAC/VLAN/포트/DSCP…</code> 등 다양한 헤더 필드를
+          조합할 수 있고, 액션은
+          <em>특정 포트로 전송, 드롭, 헤더 변경, 큐 지정</em> 등입니다.
+        </p>
+
+        <p>
+          이 매치-액션 추상화 덕분에 라우터(목적지 IP 기반), 스위치(목적지 MAC
+          기반), 방화벽(헤더 조합 + DROP) 등 기존 장비 기능을 한 인터페이스로
+          통일해 구현할 수 있습니다.
+        </p>
+
+        <h3>SDN 컨트롤러 예시</h3>
+        <ul>
+          <li>
+            <strong>OpenDaylight(ODL)</strong> – 모듈형 오픈소스 컨트롤러,
+            RESTCONF/NETCONF/OVSDB 등 다양한 프로토콜 지원
+          </li>
+          <li>
+            <strong>ONOS</strong> – 통신사업자급 대규모 네트워크를 위해 설계된
+            분산형 컨트롤러
+          </li>
+          <li>
+            <strong>Ryu</strong> – Python 기반 경량 컨트롤러,
+            학습·프로토타이핑에 적합
+          </li>
+        </ul>
+
+        <p>
+          컨트롤러는 Northbound API를 통해 OpenStack Neutron, Kubernetes CNI와
+          연동해 클라우드·컨테이너 환경의 가상 네트워크를 자동화합니다.
+        </p>
+
+        <h2 id="요약-및-학습-팁">요약 및 학습 팁</h2>
+        <ul>
+          <li>
+            <strong>SDN</strong> = 중앙 컨트롤러 + 프로그래머블한 데이터플레인
+          </li>
+          <li>
+            <strong>OpenFlow</strong> = 컨트롤러↔스위치 표준 Southbound 프로토콜
+            (매치-액션, 플로우 테이블)
+          </li>
+          <li>장점: 전역 최적화·빠른 정책 배포·장비 벤더 종속 감소</li>
+          <li>
+            현실: 전통 라우팅과 하이브리드 운영, 컨트롤러 HA·보안 등 고려 필요
+          </li>
+        </ul>
+
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>
+            Mininet + Ryu/ONOS로 가상 스위치를 만들고 간단한 플로우 규칙 실습
+          </li>
+          <li>
+            “패킷-인 → 경로 계산 → 플로우 설치” 과정 시퀀스를 다이어그램으로
+            그려보기
+          </li>
+          <li>
+            OpenFlow 매치 필드·액션 표를 만들어 방화벽·NAT·라우터 규칙을 직접
+            모델링
+          </li>
+          <li>
+            SDN 컨트롤러 HA 방법(클러스터링, ZooKeeper 등)과 보안 인증(TLS,
+            인증서)도 간략히 조사
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

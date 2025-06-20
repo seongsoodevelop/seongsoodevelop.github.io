@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>보안 이메일</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>보안 이메일</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>이메일 암호화 (기밀성 확보)</li>
+          <li>이메일 인증 및 무결성 (전자 서명 활용)</li>
+        </ul>
+
+        <p>
+          이번 글에서는 전자우편을 안전하게 주고받는
+          <strong>보안 이메일</strong> 기술을 알아봅니다. 이메일은 기본적으로
+          <strong>평문(암호화되지 않은 상태)</strong>으로 전송되므로, 제3자가
+          이를 가로채면 내용이 쉽게 유출될 수 있습니다. 또한 발신자를 위장하거나
+          내용 자체를 위변조하는 공격도 가능하기 때문에, 이메일의
+          <strong>기밀성</strong>, <strong>인증</strong>,
+          <strong>무결성</strong>을 확보하는 것이 중요합니다. 이를 위해
+          <strong>PGP(Pretty Good Privacy)</strong>나
+          <strong>S/MIME</strong> 등의 이메일 보안 기술이 개발되어 사용되고
+          있습니다. 아래에서는 이메일 내용을 암호화하여 기밀성을 제공하는
+          방법과, 전자 서명을 통해 발신자의 신원을 확인하고 메시지의 무결성을
+          검증하는 방법을 살펴보겠습니다.
+        </p>
+
+        <h2 id="암호화">이메일 암호화 (기밀성 확보)</h2>
+        <p>
+          이메일의 기밀성을 보장하기 위해 가장 널리 사용하는 방식은
+          <strong>하이브리드 암호화</strong>입니다. 이는 대칭키 암호화의
+          <strong>효율성</strong>과 공개키 암호화의
+          <strong>안전한 키 교환</strong> 장점을 결합한 방법입니다. 예를 들어
+          Alice가 Bob에게 비밀 이메일을 보내고자 할 때 다음과 같이 진행합니다:
+        </p>
+        <ul>
+          <li>
+            Alice는 무작위로 생성한 <strong>대칭 세션 키 KS</strong>를 이용해
+            이메일 메시지를 암호화합니다.
+          </li>
+          <li>
+            Alice는 그
+            <strong>세션 키 KS를 Bob의 공개키로 암호화</strong>합니다.
+          </li>
+          <li>
+            Alice는 <strong>암호화된 이메일 내용 KS(m)</strong>과
+            <strong>암호화된 세션 키 K_B(KS)</strong>를 Bob에게 전송합니다.
+          </li>
+          <li>
+            Bob은 자신의 개인키로 K_B(KS)를 복호화하여 KS를 얻고, KS로 이메일
+            암호문을 복호화합니다.
+          </li>
+        </ul>
+        <p>
+          이 과정에서 공개키 암호화는 작은 세션 키를 안전하게 전달하는 데만
+          사용되고, 실제 <strong>본문 데이터 암호화에는 대칭키</strong>를
+          사용하므로 통신 효율을 유지할 수 있습니다. 이러한 방법은 PGP에서 널리
+          사용되며, 이메일이 전송되는 동안에는 내용이 암호화되어 있어 중간에서
+          탈취하더라도 해독이 불가능합니다.
+        </p>
+
+        <h2 id="전자서명">이메일 인증 및 무결성 (전자 서명 활용)</h2>
+        <p>
+          이메일에서 <strong>발신자 인증</strong>과
+          <strong>메시지 무결성</strong>을 보장하기 위해
+          <strong>전자 서명</strong> 기법이 사용됩니다. 전자 서명을 적용하면
+          수신자는 해당 이메일이
+          <strong>정말 그 발신자가 보낸 것인지</strong> 확인하고, 내용이 전송 중
+          변경되지 않았음을 검증할 수 있습니다.
+        </p>
+        <ul>
+          <li>
+            Alice는 이메일 메시지 m의 <strong>해시값 H(m)</strong>을 계산합니다.
+          </li>
+          <li>
+            Alice는 그 해시값을 자신의 <strong>개인키</strong>로 암호화해
+            <strong>전자 서명 S</strong>를 생성합니다.
+          </li>
+          <li>Alice는 원본 메시지 m과 서명 S를 Bob에게 보냅니다.</li>
+          <li>
+            Bob은 Alice의 <strong>공개키</strong>로 S를 복호화하여 얻은 해시값과
+            m의 해시값을 비교합니다.
+          </li>
+        </ul>
+        <p>
+          두 값이 일치하면 Bob은 메시지 작성자, 무결성, 부인 방지 세 가지를 모두
+          확인할 수 있습니다. 실전에서 이러한 기능을 제공하는 대표적인
+          소프트웨어가 PGP이며, 이메일 클라이언트에 PGP를 통합하거나 S/MIME를
+          사용하면 사용자 간에 자동으로 이러한 암호화와 서명 과정이 처리됩니다.
+        </p>
+
+        <p>
+          <strong>요약:</strong> <strong>보안 이메일</strong>을 구현하려면 메일
+          내용에 대한 <strong>암호화</strong>와 <strong>전자 서명</strong>이
+          모두 필요합니다. 암호화를 통해 이메일이 전송 중 가로채어져도 내용을 알
+          수 없도록 기밀성을 확보하고, 전자 서명을 통해 발신자의 신원을 확인하고
+          메시지의 무결성을 검증할 수 있습니다. 이러한 방식을 채택한 표준 기술로
+          <strong>PGP</strong>가 있으며, 실제로 많은 사람들이 PGP를 활용해
+          이메일을 주고받음으로써 프라이버시와 보안을 지키고 있습니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> 직접 PGP를 사용해보면서 보안 이메일 과정을
+          체험해보세요. <strong>GnuPG</strong>와 같은 오픈소스 툴을 설치해
+          공개키/개인키 쌍을 만들고, 본인의 이메일에 내용을 암호화하여 보내본 뒤
+          다시 복호화해 보는 것입니다. 또한 친구와
+          <strong>PGP 공개키를 교환</strong>하고 서로에게 서명된 암호 이메일을
+          주고받아 보십시오. 이런 실습을 통해 공개키로 암호화하고 개인키로
+          복호화하는 과정, 그리고 서명 생성 및 검증 과정을 몸소 경험하면 보안
+          이메일의 원리가 더욱 분명해질 것입니다. 추가로 이메일 헤더의
+          <strong>DKIM 서명</strong>이나 <strong>SPF 레코드</strong>에 대해서도
+          공부하면 이메일 인증 체계의 다양한 면을 이해하는 데 도움이 됩니다.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

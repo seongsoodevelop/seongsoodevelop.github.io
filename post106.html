@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>네트워크 보안과 역사: 인터넷의 과제 심화 탐구</title>
+
+    <!-- ✅ 이전 글들과 동일한 전역 스타일 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>네트워크 보안과 역사: 인터넷의 과제 심화 탐구</h2>
+      </header>
+
+      <article class="post-content">
+        <h2>목차</h2>
+        <ul>
+          <li>인터넷의 보안 위협 및 공격 유형 상세 분석</li>
+          <li>네트워크 보안 방어 기술 심화 탐구</li>
+          <li>인터넷 역사와 발전 과정의 상세한 고찰</li>
+          <li>요약</li>
+          <li>효과적인 학습 팁</li>
+        </ul>
+
+        <hr />
+
+        <h2>인터넷의 보안 위협 및 공격 유형 상세 분석</h2>
+        <p>
+          인터넷 보안은 현대 사회에서 필수적인 요소로 자리 잡았습니다. 초기
+          인터넷은 소규모, 신뢰 기반의 네트워크였으나, 현재는 개방형 환경으로
+          인해 수많은 보안 위협이 존재합니다.
+        </p>
+
+        <h3>주요 공격 유형</h3>
+
+        <h4>멀웨어(Malware)</h4>
+        <p>
+          멀웨어는 시스템이나 데이터를 손상시키기 위해 설계된 악성
+          소프트웨어입니다. 주된 형태로는 다음이 있습니다:
+        </p>
+        <ul>
+          <li>
+            <strong>바이러스(Virus)</strong>: 프로그램에 기생하여 복제하고,
+            사용자 개입으로 활성화됩니다.
+          </li>
+          <li>
+            <strong>웜(Worm)</strong>: 네트워크를 통해 자동 복제되어 급속도로
+            전파됩니다.
+          </li>
+          <li>
+            <strong>스파이웨어(Spyware)</strong>: 사용자의 정보를 몰래 수집하여
+            공격자에게 전송합니다.
+          </li>
+          <li>
+            <strong>랜섬웨어(Ransomware)</strong>: 데이터를 암호화하여 몸값을
+            요구합니다.
+          </li>
+        </ul>
+
+        <h4>서비스 거부 공격(DoS/DDoS)</h4>
+        <p>
+          DoS 공격은 특정 시스템의 서비스를 마비시키기 위해 과도한 트래픽을
+          집중시키는 것입니다. DDoS(분산 서비스 거부)는 여러 대의 컴퓨터가
+          동시다발적으로 공격을 수행합니다. 대표적인 예는 Mirai 봇넷을 이용한
+          공격으로, 전 세계 주요 웹사이트의 운영에 큰 피해를 주었습니다.
+        </p>
+
+        <h4>패킷 도청(스니핑, Sniffing)</h4>
+        <p>
+          스니핑은 네트워크를 지나가는 데이터를 몰래 엿보는 행위입니다. 특히
+          무선 네트워크와 같은 공유 환경에서 심각한 문제가 됩니다. 악의적인
+          사용자는 비밀번호나 금융 정보 같은 민감한 정보를 쉽게 탈취할 수
+          있습니다.
+        </p>
+
+        <h4>스푸핑(Spoofing)</h4>
+        <p>
+          스푸핑은 공격자가 신원을 위장하여 네트워크 보안을 우회하는 기법입니다.
+          IP 스푸핑은 IP 주소를 위장하여 신뢰를 얻어내거나 공격 출처를 은닉하는
+          데 사용됩니다. DNS 스푸핑은 DNS 정보를 변조하여 잘못된 웹사이트로
+          사용자를 유도합니다.
+        </p>
+
+        <h4>중간자 공격(Man-in-the-Middle, MITM)</h4>
+        <p>
+          통신하는 두 사용자 사이에서 몰래 통신을 가로채고 조작하는 공격
+          방식입니다. 이를 통해 공격자는 민감한 정보를 훔치거나 통신 내용을
+          위변조할 수 있습니다.
+        </p>
+
+        <h2>네트워크 보안 방어 기술 심화 탐구</h2>
+
+        <h3>암호화(Encryption)</h3>
+        <p>
+          암호화는 데이터를 보호하기 위해 데이터를 암호화된 형식으로 변환하는
+          것입니다. 주요 기술로는 SSL/TLS, IPSec 등이 있으며, HTTPS가 대표적인
+          암호화된 통신 방식입니다.
+        </p>
+
+        <h3>방화벽(Firewall)</h3>
+        <p>
+          방화벽은 네트워크의 출입점을 관리하고, 허용된 트래픽만 통과시키는 보안
+          장비입니다. 네트워크 보안을 위한 가장 기본적인 장비 중 하나입니다.
+        </p>
+
+        <h3>침입 탐지 시스템(IDS)/침입 방지 시스템(IPS)</h3>
+        <p>
+          IDS는 네트워크 내의 의심스러운 활동을 탐지하여 관리자에게 알립니다.
+          IPS는 더 적극적인 방식으로 의심스러운 트래픽을 자동으로 차단하여
+          피해를 예방합니다.
+        </p>
+
+        <h3>신원 인증(Authentication)</h3>
+        <p>
+          신원 인증은 시스템 사용자의 신원을 확인하는 프로세스로, 비밀번호,
+          생체인식, 2단계 인증 등 다양한 방법이 사용됩니다.
+        </p>
+
+        <h3>패치와 업데이트</h3>
+        <p>
+          소프트웨어의 보안 결함을 수정하는 패치와 업데이트는 사이버 공격을
+          예방하는 핵심 방법입니다. 정기적인 보안 업데이트를 통해 취약점을
+          최소화하는 것이 중요합니다.
+        </p>
+
+        <h2>인터넷 역사와 발전 과정의 상세한 고찰</h2>
+
+        <h3>1960년대</h3>
+        <p>
+          인터넷의 전신인 ARPANET이 탄생했습니다. Leonard Kleinrock의 패킷 교환
+          이론이 발표되었으며, 1969년 ARPANET의 첫 노드가 설치되었습니다.
+        </p>
+
+        <h3>1970년대</h3>
+        <p>
+          TCP/IP의 기초가 마련된 시기로, 네트워크의 국제적 확장과 이메일 같은
+          주요 응용 프로그램이 등장했습니다.
+        </p>
+
+        <h3>1980년대</h3>
+        <p>
+          1983년 ARPANET이 TCP/IP 프로토콜로 전환되었으며, NSFNET과 같은 대규모
+          학술 네트워크가 구축되었습니다. 이 시기에 인터넷의 근본적인 구조가
+          완성되었습니다.
+        </p>
+
+        <h3>1990년대</h3>
+        <p>
+          월드 와이드 웹(WWW)이 등장하면서 인터넷의 대중화가 이루어졌습니다.
+          상업적인 활용이 급증하면서 인터넷 기반 비즈니스 모델이 형성되었습니다.
+        </p>
+
+        <h3>2000년대 이후</h3>
+        <p>
+          초고속 인터넷의 보급, 모바일 인터넷의 확장, 소셜 미디어 및 클라우드
+          컴퓨팅의 발전으로 인터넷은 일상 생활의 중심이 되었습니다. 최근 IoT,
+          5G, 인공지능과 결합하여 새로운 혁신이 계속되고 있습니다.
+        </p>
+
+        <h2>요약</h2>
+        <p>
+          인터넷 보안 위협에는 멀웨어, 서비스 거부 공격, 스니핑, 스푸핑 등
+          다양한 형태가 존재하며, 이를 방어하기 위한 암호화, 방화벽, IDS/IPS,
+          인증 및 패치 등의 기술이 필수적입니다. 인터넷은 ARPANET에서 시작하여
+          TCP/IP의 정착, WWW의 등장, 그리고 오늘날의 클라우드, IoT, 5G와 같은
+          첨단 기술로 끊임없이 진화하고 있습니다.
+        </p>
+
+        <h2>효과적인 학습 팁</h2>
+        <ul>
+          <li>
+            실제 보안 사고 사례를 조사하여 공격 유형과 방어 기술의 적용 방식을
+            구체적으로 이해하세요.
+          </li>
+          <li>
+            개인 네트워크나 컴퓨터 환경에서 직접 보안 설정과 방화벽 설정을
+            수행해보며 보안의 중요성을 체험적으로 익히세요.
+          </li>
+          <li>
+            인터넷의 역사적 사건을 연대표로 정리하여 각 사건의 기술적, 사회적
+            의미를 명확히 파악하세요.
+          </li>
+        </ul>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

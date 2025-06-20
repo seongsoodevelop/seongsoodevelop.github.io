@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>파이프라이닝과 GBN · Selective Repeat</title>
+
+    <!-- Google Font + 간단 스타일 ------------------------------------------------>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --radius: 1rem;
+        --shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        font-family: "Pretendard", sans-serif;
+        color: var(--text);
+        line-height: 1.7;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.3rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.6rem;
+        font-size: 0.9rem;
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 2rem 1.6rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+        margin-top: 2rem;
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1.2rem 1.2rem;
+      }
+      .post-content li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 0.94em;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.6rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo">
+        <a href="index.html" style="color: #fff; text-decoration: none"
+          >김성수의 블로그</a
+        >
+      </h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>파이프라이닝과 GBN · Selective Repeat의 동작 및 성능 비교</h2>
+      </header>
+
+      <article class="post-content" id="article">
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li><a href="#pipelining">파이프라이닝</a></li>
+          <li><a href="#gbn">Go-Back-N (GBN)</a></li>
+          <li><a href="#sr">Selective Repeat</a></li>
+          <li><a href="#compare">GBN vs Selective Repeat 비교</a></li>
+        </ul>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="pipelining">파이프라이닝</h2>
+        <p>
+          <strong>파이프라이닝(pipelining)</strong>은 송신 측이 ACK를 기다리는
+          동안에도 연속해서 여러 패킷을 전송해 네트워크 경로에 항상 다수의
+          <em>in-flight</em> 패킷을 유지함으로써 링크 활용률을 높이는 기법이다.
+          Stop-and-Wait 대비 최대 <code>N</code>배(윈도우 크기)까지 처리량을
+          끌어올릴 수 있다. 다만 손실 시 어떤 패킷을 어떻게 재전송할지에 따라
+          프로토콜 설계가 달라지며, 대표적 방식이 <em>Go-Back-N</em>과
+          <em>Selective Repeat</em>이다.
+        </p>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="gbn">Go-Back-N (GBN)</h2>
+        <ul>
+          <li>
+            <strong>슬라이딩 윈도우</strong> 크기 <code>N</code> 유지, 윈도우
+            안의 패킷을 연속 송신
+          </li>
+          <li>
+            <strong>누적 ACK</strong> 사용 – 수신자는
+            <em>마지막으로 순서대로 받은</em> 패킷 번호만 확인
+          </li>
+          <li>
+            순서 어긋난 패킷은 즉시 폐기, 동일 ACK(중복 ACK)가 반복 전송됨
+          </li>
+          <li>
+            손실·타임아웃 발생 시 <u>문제가 생긴 패킷부터 윈도우 끝까지</u> 모두
+            재전송
+          </li>
+          <li>
+            수신 측 버퍼·로직이 단순하나 손실 시 <em>불필요한 재전송</em>이 많음
+          </li>
+        </ul>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="sr">Selective Repeat (선택적 반복)</h2>
+        <ul>
+          <li>송수신 윈도우 동일 크기 유지(순번 공간의 절반 이하)</li>
+          <li>
+            수신자는 <strong>순서 안 맞아도 일단 저장</strong> 후 개별 ACK 전송
+          </li>
+          <li>송신자는 <strong>ACK 없는 특정 패킷만 선택 재전송</strong></li>
+          <li>버퍼링·정렬 로직 필요, 패킷별 타이머 관리로 구현 복잡</li>
+          <li>
+            손실 환경에서 <em>재전송 오버헤드 최소화</em>, 처리량이 GBN보다 높음
+          </li>
+        </ul>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="compare">GBN vs Selective Repeat 비교</h2>
+        <table style="width: 100%; border-collapse: collapse">
+          <thead>
+            <tr style="background: #e2e8f0">
+              <th style="padding: 0.4rem; border: 1px solid #cbd5e0">구분</th>
+              <th style="padding: 0.4rem; border: 1px solid #cbd5e0">
+                Go-Back-N
+              </th>
+              <th style="padding: 0.4rem; border: 1px solid #cbd5e0">
+                Selective Repeat
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                ACK 방식
+              </td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                누적 ACK 하나
+              </td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                개별 ACK(선택적)
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                수신 버퍼
+              </td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                작음(순서 외 폐기)
+              </td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                크고 정렬 필요
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                손실 시 재전송
+              </td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                <em>손실 패킷 이후</em> 모두
+              </td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                손실 패킷만
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                효율(손실 환경)
+              </td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">낮음</td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">높음</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">
+                구현 복잡도
+              </td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">낮음</td>
+              <td style="padding: 0.4rem; border: 1px solid #e2e8f0">높음</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="학습팁">학습 팁</h2>
+        <ol>
+          <li>
+            슬라이딩 윈도우 타임라인을 그려 손실 시 GBN은 얼마나 많은 패킷을
+            다시 보내는지, SR은 어떻게 선택 재전송하는지 직접 표시해 보세요.
+          </li>
+          <li>
+            GBN ↔ SR 차이를 “모두 재인쇄 vs 잃어버린 페이지만 재인쇄”와 같은
+            일상 비유로 떠올리면 기억에 남습니다.
+          </li>
+          <li>
+            네트워크 시뮬레이터(예: ns-3)나 온라인 데모를 이용해 손실률과 윈도우
+            크기를 바꿔가며 두 프로토콜의 throughput·재전송 횟수를 비교 실험해
+            보세요.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

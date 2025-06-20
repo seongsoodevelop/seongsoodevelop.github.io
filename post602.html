@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>데이터 링크 계층: 오류 검출 및 수정 방식</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>데이터 링크 계층: 오류 검출 및 수정 방식</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>오류 검출의 필요성과 개요</li>
+          <li>패리티 검사 방식 (단순 패리티 및 2차원 패리티)</li>
+          <li>순환 중복 검사(CRC) 방식</li>
+          <li>오류 수정 방법 개요 (FEC, 해밍 코드 등)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="오류-검출의-필요성과-개요">오류 검출의 필요성과 개요</h2>
+        <p>
+          네트워크 전송 중에 발생하는 <strong>비트 오류</strong>는 링크 계층에서
+          다뤄져야 할 중요한 문제입니다. 상위 계층까지 오류가 있는 데이터를
+          보내면 재전송 비용이 커지고 비효율적이므로,
+          <strong>데이터 링크 계층에서 먼저 오류를 발견하고 처리</strong>하는
+          것이 일반적입니다. 이를 위해 프레임에는
+          <strong>추가적인 검사 비트</strong>를 삽입하여 오류 여부를 판단하게
+          합니다. 이러한 추가 정보 필드를 통칭하여
+          <strong>EDC(Error Detection and Correction) 필드</strong>라고 부르며,
+          프레임의 데이터 부분에 대한 <strong>중복 정보</strong>를 가지고
+          있습니다.
+        </p>
+        <p>
+          완벽한 오류 검출은 현실적으로 어려워 100% 신뢰성을 보장할 수는 없지만,
+          <strong>충분히 낮은 확률로 오류를 놓치게</strong> 설계합니다.
+          일반적으로 EDC 필드가 클수록 검출 능력이 향상되지만 헤더 크기가
+          증가하는 <strong>트레이드오프</strong>가 있습니다.
+        </p>
+
+        <h2 id="패리티-검사-방식">패리티 검사 방식</h2>
+        <p>
+          <strong>패리티 검사(parity check)</strong>는 가장 단순한 오류 검출
+          방법으로, 데이터 비트들의 1의 개수가
+          <strong>홀수 또는 짝수인지</strong>를 판단하는
+          <strong>패리티 비트</strong>를 추가하는 방식입니다. 예를 들어 단일
+          비트 패리티의 경우, 데이터의 1 비트 개수를 세어 전체 1의 개수를
+          짝수(또는 홀수)로 맞춥니다.
+        </p>
+        <p>
+          수신 측은 수신한 프레임의 모든 비트를 검사해서 1의 개수가 약속된
+          규칙에 맞는지 확인함으로써 <strong>한 개의 비트 오류를 검출</strong>할
+          수 있습니다. 하지만 단일 패리티로는 2비트 이상의 짝수 개 오류가 나는
+          경우 잡아내지 못하는 한계가 있습니다.
+        </p>
+        <p>
+          이를 보완하기 위해
+          <strong>2차원 패리티(two-dimensional parity)</strong> 방식이
+          고안되었는데, 데이터를 비트 배열로 보고 각 행과 열마다 패리티를
+          계산하여 <strong>이중으로 검사</strong>하는 기법입니다. 2차원 패리티를
+          사용하면 한 비트 오류는 <strong>검출뿐 아니라 교정</strong>까지
+          가능합니다.
+        </p>
+
+        <h2 id="순환-중복-검사">순환 중복 검사(CRC) 방식</h2>
+        <p>
+          <strong>CRC(Cyclic Redundancy Check)</strong>는 패리티보다 훨씬 강력한
+          오류 검출 코딩 기법으로, 실제 네트워크에서 널리 사용됩니다. CRC에서는
+          n비트의 데이터를 하나의 이진수로 보고, 미리 정해진
+          <strong>다항식 생성자 G(x)</strong>에 따라 검증 코드를 추가합니다.
+        </p>
+        <p>
+          송신 측은 데이터를 보낼 때 D에 r개의 0을 덧붙인 값을 G(x)로 2진 나눗셈
+          한 나머지를 구하고, 그 나머지 값을 검사 비트로 채워 프레임에
+          포함시킵니다. 수신 측은 동일한 생성자로 나누어 나머지가 0인지
+          확인하며, 나머지가 0이 아니면 오류 발생으로 판단합니다.
+        </p>
+
+        <h2 id="오류-수정-방법-개요">
+          오류 수정 방법 개요 (FEC, 해밍 코드 등)
+        </h2>
+        <p>
+          <strong>전방 오류 수정(FEC)</strong>은 데이터 링크 계층에서 능동적으로
+          오류를 교정하는 기법입니다. 대표적으로
+          <strong>해밍 코드(Hamming code)</strong>가 있습니다. 해밍 코드는 여러
+          개의 검증 비트를 추가해 수신 측에서 최대 1비트 오류를 찾아내어 원래
+          데이터로 복원할 수 있습니다.
+        </p>
+        <p>
+          FEC 방식은 재전송이 어려운 환경이나 오류율이 높은 물리 매체에서
+          활용됩니다. 그러나 추가 비트로 인한 오버헤드와 복잡한 디코딩 연산이
+          필요하기 때문에, 일반적인 LAN에서는 오류 검출까지만 하고 수정은 상위
+          계층의 재전송에 맡깁니다.
+        </p>
+
+        <h2 id="요약-및-학습-팁">요약 및 학습 팁</h2>
+        <ul>
+          <li>패리티 비트는 간단하지만 검출 능력이 제한적</li>
+          <li>2차원 패리티는 단일 비트 오류 교정 가능</li>
+          <li>CRC는 버스트 오류 검출에 강력하고 연산 효율적</li>
+          <li>FEC(해밍 코드)는 자체 수정 가능, 그러나 오버헤드 존재</li>
+        </ul>
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>작은 예제로 패리티, CRC 계산 직접 연습</li>
+          <li>해밍 코드 동작 원리 따라가며 교정 방법 이해</li>
+          <li>Wireshark 등으로 FCS 필드 CRC 검증 간접 체험</li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

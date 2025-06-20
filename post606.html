@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>스위치와 링크 계층의 전송 처리</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>스위치와 링크 계층의 전송 처리</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>스위치의 역할과 특징</li>
+          <li>스위치의 프레임 전송 처리 과정</li>
+          <li>필터링, 홍수 및 주소 학습 동작</li>
+          <li>여러 대의 스위치가 있는 경우 (멀티 스위치 네트워크 개요)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="스위치-역할-특징">스위치의 역할과 특징</h2>
+        <p>
+          <strong>스위치(Switch)</strong>는 데이터 링크 계층(L2)에서 동작하는
+          <strong>고속의 패킷 전달 장치</strong>입니다. 이더넷 스위치는 여러
+          개의 포트를 가지고 있으며, 각 포트에 연결된 장치들 간에 프레임을
+          <strong>저장 후 전달(store-and-forward)</strong>하는 기능을 합니다.
+          스위치는 들어온 프레임의 헤더를 확인하여 목적지 MAC 주소를 읽고, 그
+          주소가 어디로 가야 하는지를 판단한 뒤 해당 포트로만 프레임을
+          내보냅니다. 이러한 <strong>지능형 포워딩</strong>을 통해 불필요한
+          전송을 줄이고 <strong>LAN의 효율과 보안</strong>을 높입니다.
+        </p>
+        <p>
+          스위치는 <strong>투명(transparent)</strong>하게 동작하기 때문에,
+          연결된 Hosts들은 스위치의 존재를 느끼지 못하고 마치 모두 직접 연결된
+          것처럼 통신할 수 있습니다. 또한 스위치는
+          <strong>플러그 앤 플레이</strong> 장치로, 전원을 연결하고 네트워크
+          케이블만 꽂으면 별도 구성 없이 자동으로 MAC 주소 학습을 통해
+          동작합니다. 이런 특성들로 인해 스위치는 현대 이더넷 LAN에서 허브를
+          완전히 대체한 표준 장비가 되었습니다.
+        </p>
+
+        <h2 id="스위치-전송-과정">스위치의 프레임 전송 처리 과정</h2>
+        <p>
+          스위치가 프레임을 어떻게 처리하는지
+          <strong>단계별로</strong> 살펴보겠습니다:
+        </p>
+        <ol>
+          <li>프레임 수신 (Ingress): 프레임 저장, 헤더 분석, 오류 검사</li>
+          <li>MAC 주소 학습: 소스 MAC과 포트 매핑 기록</li>
+          <li>목적지 포트 결정: 테이블 조회 후 유니캐스트/홍수 결정</li>
+          <li>프레임 전송 (Egress): 포트로 전송, 대기 큐 활용</li>
+          <li>MAC 테이블 유지: 일정 시간 후 미사용 MAC 제거</li>
+        </ol>
+
+        <h2 id="필터링-홍수-학습">필터링, 홍수 및 주소 학습 동작</h2>
+        <ul>
+          <li>
+            <strong>필터링:</strong> 같은 포트로 재전송 불필요한 프레임은 폐기
+          </li>
+          <li><strong>홍수:</strong> 목적지 모를 때 모든 포트로 전송</li>
+          <li><strong>주소 학습:</strong> 프레임 소스 MAC을 테이블에 등록</li>
+        </ul>
+
+        <h2 id="멀티-스위치">여러 대의 스위치가 있는 경우</h2>
+        <p>
+          스위치 여러 대가 연결된 네트워크에서는 <strong>루프</strong> 발생
+          위험이 있으며, 이를 막기 위해
+          <strong>스패닝 트리 프로토콜(STP)</strong>이 사용됩니다. STP는 루프를
+          방지하고 논리적 트리 구조를 형성해 안정성을 유지합니다.
+        </p>
+
+        <h2 id="요약-팁">요약 및 학습 팁</h2>
+        <p>
+          <strong>요약:</strong> 스위치는 MAC 기반의 스마트 포워딩을 제공하며,
+          충돌 도메인을 분리하고 LAN 성능을 높입니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> 스위치 MAC 테이블과 STP 상태를 CLI나 시뮬레이터에서
+          조회하며 동작을 관찰해 보세요.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

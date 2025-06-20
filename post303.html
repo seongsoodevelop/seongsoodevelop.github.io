@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>비연결형 전송: UDP 및 체크섬</title>
+
+    <!-- ▣ 공통 스타일 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>비연결형 전송: UDP 및 체크섬</h2>
+      </header>
+
+      <article class="post-content">
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>UDP의 특징</li>
+          <li>UDP 세그먼트 구조</li>
+          <li>UDP 체크섬</li>
+        </ul>
+
+        <h2 id="udp의-특징">UDP의 특징</h2>
+        <p>
+          <strong>UDP (User Datagram Protocol)</strong>는 전송 계층의
+          <strong>비연결형(connectionless)</strong> 프로토콜로,
+          <strong>간단하고 효율적인 전송</strong> 서비스를 제공합니다. UDP에서는
+          데이터를 보내기 전에 연결 설정(handshake)을 하지 않으며,
+          <strong
+            >송신자는 수신자의 준비 상태와 무관하게 일방적으로 패킷을
+            전송</strong
+          >할 수 있습니다. 또한 패킷이 목적지에 도달했는지, 중간에 손실되었는지
+          등을 확인하는 추가 메커니즘이 없기 때문에
+          <strong>신뢰성이 보장되지 않고 순서가 어긋날 수 있습니다</strong>.
+          이러한 특성 때문에 UDP를 흔히 “no-frills(꾸밈없는) 전송”이라고
+          부르기도 합니다. 대신 UDP는
+          <strong>헤더 오버헤드가 작고 구현이 단순</strong>하여 지연(latency)이
+          매우 낮고, 처리량 측면에서도 최적의 성능을 낼 수 있다는 장점이
+          있습니다.
+        </p>
+
+        <p>
+          UDP의 이러한 특징은 <strong>실시간 응용</strong>이나
+          <strong>단순 질의/응답 프로토콜</strong> 등에서 유용하게 활용됩니다.
+          예를 들어, 화상 통화나 온라인 스트리밍의 경우 일부 패킷 손실이
+          발생해도 다음 프레임으로 보완되기 때문에 재전송을 기다리느라 지연이
+          늘어나는 것보다 약간의 손실을 감수하는 편이 낫습니다. 또 다른 예로
+          <strong>DNS</strong>(도메인 이름 시스템) 질의처럼 매우 짧은 요청과
+          응답으로 구성된 통신에서는, TCP처럼 연결 설정에 3웨이 핸드셰이크를
+          하는 것이 오히려 부담이 됩니다. 이렇듯 UDP는
+          <strong>단순함이 장점</strong>이 되는 상황에서 널리 쓰이며, 개발자는
+          신뢰성·혼잡 제어를 별도로 구현하거나 애플리케이션 로직으로 보완하는
+          방식을 택합니다.
+        </p>
+
+        <h2 id="udp-세그먼트-구조">UDP 세그먼트 구조</h2>
+        <p>
+          UDP 세그먼트의 구조는 TCP에 비해 훨씬 단순합니다.
+          <strong>UDP 헤더</strong>는 고정된 8&nbsp;바이트 크기로 매우 작으며,
+          다음 4개의 필드로 구성됩니다.
+        </p>
+        <ul>
+          <li><strong>출발지 포트 번호</strong> (16비트)</li>
+          <li><strong>목적지 포트 번호</strong> (16비트)</li>
+          <li><strong>길이</strong> (16비트) — 헤더+데이터 전체 길이</li>
+          <li><strong>체크섬</strong> (16비트) — 오류 검출용</li>
+        </ul>
+
+        <p>
+          UDP 헤더에는 순서 번호·ACK·플래그 같은 <em>연결 상태 정보</em>가 전혀
+          없어, <strong>각 패킷은 독립적인 메시지</strong>로 취급됩니다. 그 결과
+          헤더 오버헤드가 최소화되어 프로토콜 처리 지연도 줄어듭니다.
+        </p>
+
+        <h2 id="udp-체크섬">UDP 체크섬</h2>
+        <p>
+          UDP는 신뢰적 재전송은 제공하지 않지만,
+          <strong>비트 오류 검출</strong>을 위해 헤더에
+          <strong>체크섬(checksum)</strong> 필드를 둡니다. 송신 측은 세그먼트를
+          16비트 워드 단위로 1의 보수 덧셈을 수행해 합계를 계산하고, 그 값을
+          체크섬 필드에 기록합니다. 수신 측은 도착 세그먼트의 모든 워드를 동일한
+          방식으로 더해 결과를 0xFFFF와 비교합니다. 값이 일치하면 ‘오류 없음’,
+          다르면 ‘오류’로 판단하여 해당 세그먼트를 폐기합니다. 즉, UDP 체크섬은
+          <em>데이터가 손상되지 않았는지</em>만 확인하며, 손실·중복·순서 문제는
+          다루지 않습니다.
+        </p>
+
+        <h2 id="요약">요약</h2>
+        <ul>
+          <li>
+            <strong>UDP</strong>는 비연결형·비신뢰적 전송 프로토콜(낮은
+            지연·작은 헤더).
+          </li>
+          <li>
+            헤더는
+            <em>출발지&nbsp;포트, 목적지&nbsp;포트, 길이, 체크섬</em> 4필드(8B).
+          </li>
+          <li>
+            <strong>체크섬</strong>으로 비트 오류는 검출하지만 재전송은
+            애플리케이션 책임.
+          </li>
+        </ul>
+
+        <h2 id="학습-팁">학습 팁</h2>
+        <ol>
+          <li>
+            간단한 UDP echo server/클라이언트를 만들어 패킷 손실·순서 변조 시
+            동작을 관찰하세요.
+          </li>
+          <li>
+            <code>Wireshark</code>로 DNS 질의 패킷을 캡처해 UDP
+            헤더(포트·체크섬)를 직접 확인해 보세요.
+          </li>
+          <li>
+            UDP가 DDoS·반사공격에 악용되는 사례를 찾아보면 ‘신뢰성·연결 부재’의
+            장단점을 체감할 수 있습니다.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

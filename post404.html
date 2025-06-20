@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NAT와 IPv6, IPv4의 한계와 전환 방식</title>
+
+    <!-- 🌐 공통 블로그 스타일 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>NAT와 IPv6, IPv4의 한계와 전환 방식</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>
+            <a href="#nat-network-address-translation"
+              >NAT (Network Address Translation)</a
+            >
+          </li>
+          <li>
+            <a href="#ipv6와-ipv4의-한계-극복">IPv6와 IPv4의 한계 극복</a>
+          </li>
+          <li>
+            <a href="#ipv4에서-ipv6로의-전환-방법"
+              >IPv4에서 IPv6로의 전환 방법</a
+            >
+          </li>
+          <li><a href="#요약-및-학습-팁-3">요약 및 학습 팁</a></li>
+        </ul>
+
+        <h2 id="nat-network-address-translation">
+          NAT (Network Address Translation)
+        </h2>
+        <p>
+          IPv4 주소가 부족해지면서 등장한 중요한 개념이 바로
+          <strong>NAT(Network Address Translation, 네트워크 주소 변환)</strong
+          >입니다. NAT는 하나의 공인 IP 주소로
+          <strong>여러 대의 사설망 장비</strong>가 인터넷에 나갈 수 있도록
+          해주는 기술입니다. 예를 들어 우리집 공유기가 대표적인 NAT 장치인데, 집
+          안의 PC나 폰들은 192.168.x.x 같은 사설 IP를 쓰지만, 인터넷으로 나갈
+          때는 공유기의 공인 IP 하나로 통신을 하게 됩니다. NAT가 동작하면
+          외부에서는 마치 <strong>여러 장치가 아니라 NAT 라우터 한 대</strong>와
+          통신하는 것처럼 보입니다.
+        </p>
+
+        <p>
+          NAT의 작동 방식은 간단히 말해
+          <strong>IP 주소와 포트 번호를 바꿔치기</strong>하는 것입니다. 라우터의
+          NAT 테이블에는 내부 사설 IP:포트와 외부 공인 IP:포트의 대응 쌍들이
+          기록됩니다. 아래 그림은 NAT의 동작 예시를 보여줍니다: 사설망 호스트
+          10.0.0.1이 공인망의 서버(예: 128.119.40.186:80)에 요청을 보내고 응답을
+          받을 때, NAT 라우터가 어떻게 출발지와 목적지 주소를 변환하는지 나타나
+          있습니다.
+        </p>
+
+        <p>
+          예를 들어, 내부 IP 10.0.0.1의 어떤 프로그램이 소스 포트 3345로 웹서버
+          128.119.40.186의 포트 80에 접속한다고 해봅시다. NAT 라우터는 다음과
+          같이 동작합니다.
+        </p>
+
+        <ol>
+          <li>
+            <strong>출발지 → NAT</strong>: 호스트 <code>10.0.0.1:3345</code>에서
+            목적지 <code>128.119.40.186:80</code>으로 패킷을 보냅니다. 이 패킷이
+            라우터의 내부 인터페이스에 도착하면, NAT 라우터는 새로운 변환
+            엔트리를 만들 준비를 합니다.
+          </li>
+          <li>
+            <strong>출발지 변환</strong>: NAT 라우터는 해당 패킷의 출발지 주소를
+            자신의 공인 IP (예: <code>138.76.29.7</code>)로 바꾸고 출발지 포트도
+            가용한 임의의 새 포트 (예: <code>5001</code>)로 변경합니다. 이제
+            패킷을 외부로 보낼 때는 <strong>소스가 138.76.29.7:5001</strong>이
+            됩니다. 동시에 NAT 테이블에
+            <code>(내부 10.0.0.1:3345) → (외부 138.76.29.7:5001)</code> 매핑을
+            저장해 둡니다. 외부 서버는 이 패킷을 받으면 출발지(요청자)가
+            138.76.29.7:5001인 것으로 인식합니다.
+          </li>
+          <li>
+            <strong>응답 패킷 반환</strong>: 웹서버는 응답 패킷을
+            <code>128.119.40.186:80 → 138.76.29.7:5001</code>로 보냅니다. NAT
+            라우터는 목적지 정보를 보고 자신이 관리하는 NAT 테이블에서
+            <code>138.76.29.7:5001</code>에 대응하는 내부 주소를 찾습니다.
+          </li>
+          <li>
+            <strong>목적지 변환</strong>: NAT 라우터는 응답 패킷의
+            <strong>목적지 주소를 10.0.0.1</strong>, 포트도 원래의 3345로
+            변경합니다. 이제 패킷의 목적지가 10.0.0.1:3345로 수정되었으므로, NAT
+            라우터는 이를 내부 네트워크로 전달합니다.
+          </li>
+        </ol>
+
+        <p>
+          이러한 NAT 변환 동작은 <strong>동적</strong>으로 이루어지며, 다수의
+          내부 단말이 동시에 서로 다른 외부와 통신할 때도 포트 번호를 적절히
+          바꿔 가며 구분할 수 있습니다. 16비트 포트 번호 덕분에 한 공인 IP로
+          <strong>약 6만 개 가량의 동시 연결</strong>을 지원할 수 있으므로
+          가정이나 소규모 네트워크에서는 하나의 IP만으로도 충분히 많은 장치가
+          인터넷에 나갈 수 있습니다.
+        </p>
+
+        <p>
+          NAT의 장점으로는 <strong>IPv4 주소 절약</strong> 외에도 몇 가지가 자주
+          언급됩니다.
+        </p>
+        <ul>
+          <li>
+            내부 네트워크 구조를 외부에 감출 수 있어
+            <strong>보안상 이점</strong>
+          </li>
+          <li>
+            내부 주소계를 자유롭게 바꿔도 외부와 무관하니
+            <strong>주소 계획이 유연</strong>
+          </li>
+        </ul>
+
+        <p>
+          그러나 NAT에는 <strong>단점과 한계</strong>도 있습니다. 애초에 IP는
+          종단간 통신(end-to-end)을 염두에 두고 설계됐는데, NAT는 중간에서
+          주소를 변환해 <strong>종단간 투명성</strong>을 훼손합니다. P2P나 VoIP
+          같은 애플리케이션은 NAT 환경에서 연결 설정이 복잡해지고, FTP 같은
+          프로토콜은 패킷 내용부에 IP 정보를 포함하므로 NAT 장치가 L4 이상까지
+          파싱해야 하는 문제도 생깁니다. 덧붙여 “NAT 덕분에 IPv6 도입이
+          늦어졌다”는 지적도 있죠.
+        </p>
+
+        <h2 id="ipv6와-ipv4의-한계-극복">IPv6와 IPv4의 한계 극복</h2>
+        <p>
+          <strong>IPv6</strong>는 128비트 주소를 사용해 사실상 무한대에 가까운
+          IP를 제공합니다. <strong>주소 부족 문제</strong>를 근본적으로 해결하기
+          위함이 첫 추진 배경이었습니다.
+        </p>
+
+        <p>IPv6의 주요 특징은 다음과 같습니다.</p>
+        <ul>
+          <li><strong>헤더 단순화</strong> (고정 40바이트, 체크섬 제거)</li>
+          <li>
+            <strong>라우터 단편화 미지원</strong> – 소스가 Path MTU Discovery
+            수행
+          </li>
+          <li>
+            확장 헤더 구조 및 <strong>ICMPv6·Neighbor Discovery</strong> 통합
+          </li>
+          <li>
+            브로드캐스트 삭제, <strong>멀티캐스트·애니캐스트</strong>만 지원
+          </li>
+          <li>
+            주소 표기는 16진수, 콜론 구분, <code>::</code> 축약 가능 (<code
+              >2001:db8::1</code
+            >
+            등)
+          </li>
+        </ul>
+
+        <h2 id="ipv4에서-ipv6로의-전환-방법">IPv4에서 IPv6로의 전환 방법</h2>
+        <p>
+          IPv4와 IPv6는 호환되지 않으므로 과도기적 공존·전환 기술이 필요합니다.
+        </p>
+
+        <ul>
+          <li>
+            <strong>듀얼 스택</strong>: 장비가 IPv4·IPv6 둘 다 구현해 상황에
+            따라 선택
+          </li>
+          <li>
+            <strong>터널링</strong>: IPv6 패킷을 IPv4 패킷으로 캡슐화(6in4,
+            6to4, Teredo 등)
+          </li>
+          <li>
+            <strong>NAT64/DNS64</strong>: IPv6-only 클라이언트가 IPv4 서버와
+            통신하도록 변환
+          </li>
+        </ul>
+
+        <p>
+          전 세계 IPv6 보급률은 꾸준히 상승 중이지만, 완전 전환까지는 시간이 더
+          걸릴 전망입니다. 그동안은 위 기술들이 혼재하며 단계적 대체가 이루어질
+          것입니다.
+        </p>
+
+        <h2 id="요약-및-학습-팁-3">요약 및 학습 팁</h2>
+        <ul>
+          <li>
+            <strong>NAT</strong> : IPv4 주소 절약, 그러나 종단간 특성 훼손
+          </li>
+          <li>
+            <strong>IPv6</strong> : 주소 공간·헤더 구조 개선, IPv4 한계 근본
+            해결
+          </li>
+          <li>
+            <strong>전환</strong> : 듀얼스택, 터널링, NAT64 등으로 점진적 이행
+          </li>
+        </ul>
+
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>
+            자신의 PC·스마트폰에서 IPv6 주소를 확인하고
+            <code>ping -6</code> 테스트
+          </li>
+          <li>NAT 테이블을 그림으로 작성하며 포트 변환 과정을 따라가 보기</li>
+          <li>IPv4 vs IPv6 헤더 비교표 만들기 (체크섬·브로드캐스트 유무 등)</li>
+          <li>듀얼스택/터널링/NAT64 장단점을 표로 정리</li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

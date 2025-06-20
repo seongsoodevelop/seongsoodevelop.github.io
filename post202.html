@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>클라이언트-서버 및 P2P 아키텍처</title>
+
+    <!-- ⬇️ 이전 글들과 동일한 전역 스타일 유지 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>클라이언트-서버 및 P2P 아키텍처</h2>
+      </header>
+
+      <article class="post-content">
+        <h2>목차</h2>
+        <ul>
+          <li>클라이언트-서버 아키텍처</li>
+          <li>P2P 아키텍처</li>
+          <li>하이브리드 모델과 클라우드 컴퓨팅</li>
+          <li>아키텍처 별 장단점 비교</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2>클라이언트-서버 아키텍처</h2>
+        <p>
+          <strong>클라이언트-서버(client-server)</strong> 모델은 전통적으로
+          인터넷 서비스에서 가장 널리 사용되어 온 아키텍처입니다. 이 구조에서는
+          <strong>서버(server)</strong> 역할을 하는 컴퓨터(혹은 서버 팜)가
+          <strong>상시 가동</strong>되며 클라이언트들의 요청을 처리합니다.
+          서버는 <strong>고정된 IP 주소</strong>를 가지고 지속적으로 네트워크에
+          연결되어 있고, 많은 클라이언트로부터 오는 다수의 동시 접속을 감당하기
+          위해 <strong>데이터센터나 클라우드 인프라</strong>를 통해 확장성 있게
+          구성됩니다.
+        </p>
+        <p>
+          <strong>클라이언트(client)</strong>들은 필요할 때만 서버에 접속하며
+          대개 동적 IP를 받아 <strong>간헐적으로 연결</strong>됩니다. 중요한
+          점은, 클라이언트들끼리는 직접 통신하지 않고 반드시 서버를 통해
+          간접적으로 상호작용한다는 것입니다. 예를 들어 웹 서비스에서 사용자의
+          브라우저(클라이언트)는 항상 웹 서버에 HTTP 요청을 보내 웹페이지를
+          가져오며, 다른 브라우저와 직접 통신하지는 않습니다. 클라이언트-서버
+          아키텍처는 <strong>중앙 집중형</strong> 구조이므로 관리와 제어가
+          비교적 수월하며, 보안 정책 적용도 서버 측에서 일관되게 할 수 있다는
+          장점이 있습니다.
+        </p>
+
+        <h2>P2P 아키텍처</h2>
+        <p>
+          <strong>피어-투-피어(Peer-to-Peer, P2P)</strong> 아키텍처는 중앙
+          서버를 두지 않고,
+          <strong>개별 단말들이 직접 서로 자원을 주고받는</strong> 분산형
+          구조입니다. 여기서 각 참여 노드를 <strong>피어(peer)</strong>라고
+          부르며, 피어는 상황에 따라
+          <strong>클라이언트와 서버의 역할을 모두 수행</strong>합니다.
+        </p>
+        <p>
+          P2P의 큰 강점은 <strong>자체 확장성(self-scalability)</strong>인데,
+          새로운 피어가 네트워크에 합류할 때 그 피어는 소비자일 뿐 아니라
+          잠재적인 제공자이기도 하므로 전체 시스템의 서비스 용량이 함께
+          증가합니다. 그러나 피어들이 일시적으로 접속됐다 끊어졌다 하거나 IP가
+          바뀌는 등 <strong>동적 환경</strong>이기 때문에
+          <strong>안정적인 관리가 어렵고</strong>, 성능이나 신뢰성 측면에서
+          예측이 힘들다는 단점도 있습니다.
+        </p>
+
+        <h2>하이브리드 모델과 클라우드 컴퓨팅</h2>
+        <p>
+          현실의 많은 시스템에서는
+          <strong>클라이언트-서버 모델과 P2P 모델을 혼합</strong>한 하이브리드
+          구조를 채택합니다. 예를 들어 초창기 P2P 음악 공유 서비스인
+          <em>Napster</em>는 중앙에 노래 목록을 관리하는 서버를 두고 실제 파일
+          전송은 사용자 피어들끼리 하도록 설계되었습니다. 현대의
+          <em>BitTorrent</em>도 <strong>트래커(tracker)</strong>라는 중앙 서버가
+          참여자 목록을 관리하지만, 파일 조각은 P2P로 교환됩니다. 또한
+          <em>Skype</em>와 같은 VoIP 서비스는 로그인 등 초기 단계는 중앙 서버를
+          이용하고, 통화 데이터는 P2P로 직접 교환하여 지연을 줄입니다.
+        </p>
+        <p>
+          한편 클라이언트-서버 구조에서 서버 측 성능을 높이기 위해
+          <strong>클라우드 컴퓨팅</strong>을 활용하는 추세가 강합니다.
+          <strong>IaaS</strong>·<strong>PaaS</strong>·<strong>SaaS</strong>와
+          같은 모델을 통해 서버 자원을 탄력적으로 확장·축소할 수 있어 관리
+          부담을 줄여 줍니다.
+        </p>
+
+        <h2>아키텍처 별 장단점 비교</h2>
+        <p>
+          <strong>클라이언트-서버</strong>의 장점은
+          <strong>관리 용이성</strong>·<strong>신뢰성</strong>, 단점은
+          <strong>중앙 서버 과부하</strong>·<strong>높은 인프라 비용</strong
+          >·<strong>단일 장애점</strong>입니다.
+        </p>
+        <p>
+          <strong>P2P</strong>의 장점은 <strong>우수한 확장성</strong>·<strong
+            >비용 분산</strong
+          >, 단점은 <strong>관리 통제 난이도</strong>·<strong
+            >신뢰성/보안 문제</strong
+          >입니다. 실제 서비스는 두 모델의 장점을 취해 하이브리드로 설계되는
+          경우가 많습니다.
+        </p>
+
+        <h2>요약 및 학습 팁</h2>
+        <p>
+          클라이언트-서버는 <strong>중앙 집중</strong>, P2P는
+          <strong>분산 협력</strong> 구조로 요약됩니다. 서비스 요구사항에 따라
+          두 구조를 적절히 조합하는 것이 핵심입니다.
+        </p>
+        <ul>
+          <li>
+            <strong>학습 팁:</strong> 주변 서비스가 어떤 아키텍처를 쓰는지
+            조사해 보세요. (예: 넷플릭스-CDN 기반 C/S, 토렌트-P2P 등)
+          </li>
+          <li>
+            <strong>추가 참고:</strong> P2P에서는 참여 독려를 위한
+            <em>인센티브 메커니즘</em>(tit-for-tat 등)이 필수 연구 주제입니다.
+          </li>
+        </ul>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

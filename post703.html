@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IEEE 802.11 무선 LAN (Wi-Fi)</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+      <header class="post-header">
+        <h2>IEEE 802.11 무선 LAN (Wi-Fi)</h2>
+      </header>
+      <article class="post-content">
+        <h3>목차</h3>
+        <ul>
+          <li>Wi-Fi 표준의 발전 (802.11a/b/g/n/ac 등)</li>
+          <li>Wi-Fi 네트워크 구조 (BSS와 AP)</li>
+          <li>Wi-Fi 채널과 연결 절차 (스캐닝 및 연합)</li>
+          <li>무선 LAN의 다중 접속 문제 (히든 터미널 등)</li>
+          <li>CSMA/CA 프로토콜과 충돌 회피 (ACK, RTS/CTS)</li>
+        </ul>
+
+        <h3>Wi-Fi 표준의 발전</h3>
+        <p>
+          IEEE 802.11 표준은 여러 세대를 거치며 속도와 기능이 비약적으로
+          발전했습니다. 802.11b는 11Mbps, 802.11a/g는 54Mbps를 지원했고,
+          802.11n은 MIMO로 100Mbps 이상을 달성했습니다. 최신 802.11ac,
+          802.11ax(Wi-Fi 6)는 기가비트급 속도와 다수 접속자를 지원하며, 하위
+          호환성을 유지해 다양한 기기가 함께 동작하도록 설계되었습니다.
+        </p>
+
+        <h3>Wi-Fi 네트워크 구조 (BSS와 AP)</h3>
+        <p>
+          Wi-Fi 네트워크는 AP와 그에 연결된 단말이 모여 BSS를 형성하며, 여러
+          BSS가 ESS로 확장될 수 있습니다. AP는 유선망과 무선 단말 간 중계를
+          담당하고, SSID와 채널로 구분됩니다. IBSS는 AP 없이 단말끼리 직접
+          연결되는 구조지만, 일상에서는 주로 AP 기반 인프라 모드가 사용됩니다.
+        </p>
+
+        <h3>Wi-Fi 채널과 연결 절차</h3>
+        <p>
+          Wi-Fi는 여러 채널 중 하나를 사용하며, 단말은 스캐닝을 통해 AP를
+          탐색합니다. 패시브 스캐닝은 비콘을 청취하고, 액티브 스캐닝은 프로브
+          요청을 보내 AP 응답을 받습니다. 단말은 AP와 연합 후 IP를 받아 인터넷에
+          접속합니다.
+        </p>
+
+        <h3>무선 LAN의 다중 접속 문제</h3>
+        <p>
+          무선 LAN은 숨은 터미널 문제(A와 C가 서로 보지 못해 동시에 전송해 충돌
+          발생), 노출된 터미널 문제(C가 B 신호에 위축돼 불필요하게 전송을 멈추는
+          상황) 등 다중 접속에서 어려움을 겪습니다. 이러한 문제는 무선 특유의
+          가시성 차이 때문에 발생합니다.
+        </p>
+
+        <h3>CSMA/CA 프로토콜과 충돌 회피</h3>
+        <p>
+          802.11은 CSMA/CA를 통해 충돌을 회피합니다. 송신 전 채널을 감지하고,
+          비어 있으면 전송하며, 사용 중이면 랜덤 백오프로 대기합니다. 수신자는
+          ACK를 보내 송신 성공을 확인하며, RTS/CTS는 긴 데이터 전송 전에 채널을
+          예약해 숨은 터미널 충돌을 방지합니다.
+        </p>
+
+        <h3>요약 및 학습 팁</h3>
+        <p>
+          <strong>요약:</strong> Wi-Fi는 AP 기반 구조와 CSMA/CA로 다중 접속을
+          관리하며, RTS/CTS로 숨은 터미널 문제를 보완합니다. 표준은 속도와
+          기능을 발전시키며 호환성을 유지합니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> CSMA/CD와 CSMA/CA를 표로 비교해 보고, Wireshark로
+          무선 프레임을 캡처하거나 Wi-Fi 분석 앱으로 주변 채널 상황을 관찰해
+          보세요. 숨은 터미널 시나리오를 직접 그려보면 이해가 더 깊어집니다.
+        </p>
+      </article>
+    </main>
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

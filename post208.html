@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>소켓 프로그래밍 (TCP와 UDP)</title>
+
+    <!-- 🔗 공통 블로그 스타일 유지 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      pre {
+        background: #f1f5f9;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>소켓 프로그래밍 (TCP와 UDP)</h2>
+      </header>
+
+      <article class="post-content">
+        <h2>목차</h2>
+        <ul>
+          <li>소켓과 네트워크 API 소개</li>
+          <li>UDP 소켓 프로그래밍 예시</li>
+          <li>TCP 소켓 프로그래밍 예시</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2>소켓과 네트워크 API 소개</h2>
+        <p>
+          <strong>소켓(Socket)</strong>은 네트워크 프로그래밍에서
+          <strong>프로세스 간 통신의 출입문</strong> 역할을 하는 소프트웨어
+          인터페이스입니다. 애플리케이션 레벨에서 데이터를 보내거나 받을 때,
+          개발자는 소켓을 통해 운영체제의 네트워크 기능을 사용하게 됩니다. 쉽게
+          말해, 프로세스는 소켓에 데이터를 쓰면 운영체제가 이를 네트워크로
+          보내주고, 소켓에서 데이터를 읽으면 네트워크를 통해 도착한 바이트를
+          돌려받습니다. 이러한 소켓 API는 대부분의 운영체제에서 지원하며, C의
+          BSD 소켓 API가 대표적 표준이고 파이썬, 자바 등에서도 소켓 프로그래밍
+          인터페이스를 제공합니다.
+        </p>
+        <p>
+          소켓 프로그래밍을 할 때는 <strong>TCP 소켓</strong>과
+          <strong>UDP 소켓</strong>을 선택할 수 있는데, 이는 각각 하위에 TCP,
+          UDP 프로토콜을 사용하여 통신함을 의미합니다. 기본적인 사용 흐름은,
+          <strong>서버 프로그램</strong>은 소켓을 생성하고 주소(IP, 포트)와
+          연결(bind)한 후 클라이언트의 연결이나 패킷을 기다리고,
+          <strong>클라이언트 프로그램</strong>은 통신할 상대의 IP와 포트로
+          소켓을 통해 데이터를 보냄으로써 상호작용이 시작됩니다.
+        </p>
+
+        <h2>UDP 소켓 프로그래밍 예시</h2>
+        <p>
+          UDP를 이용한 소켓 프로그래밍은 비교적 단순합니다.
+          <strong>UDP는 비연결형(connectionless)</strong>이기 때문에,
+          클라이언트와 서버 사이에
+          <strong>사전 연결 설정(handshake)</strong> 과정이 없습니다. 그 대신
+          데이터를 보낼 때마다 <strong>목적지 주소를 함께 지정</strong>하여
+          전송하고, 받을 때도 송신자 주소와 함께 수신합니다. 다음은 파이썬 유사
+          코드로 작성한 UDP 서버와 클라이언트 예시입니다:
+        </p>
+
+        <pre><code># UDP 서버 예시 (에코 서버)
+import socket
+server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server_sock.bind(("0.0.0.0", 9999))        # 포트 9999번에서 대기
+data, addr = server_sock.recvfrom(1024)     # 데이터 수신
+print("클라이언트로부터 수신:", data.decode())
+server_sock.sendto(data, addr)              # 에코
+server_sock.close()
+
+# UDP 클라이언트 예시
+client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+msg = "Hello UDP".encode()
+client_sock.sendto(msg, ("server.ip.address", 9999))
+data, addr = client_sock.recvfrom(1024)
+print("서버로부터 응답:", data.decode())
+client_sock.close()</code></pre>
+
+        <p>
+          UDP는 <strong>신뢰성이 없고</strong> 패킷이 순서와 상관 없이
+          독립적으로 전달되지만, 구현이 간단하고 지연 시간이 낮아 실시간
+          애플리케이션이나 멀티캐스트 등에 자주 쓰입니다.
+        </p>
+
+        <h2>TCP 소켓 프로그래밍 예시</h2>
+        <p>
+          TCP를 이용한 소켓 프로그래밍은 UDP보다 절차가 조금 더 복잡하지만,
+          <strong>연결지향(connection-oriented)</strong>적이고
+          <strong>신뢰성 있는 바이트 스트림</strong>을 제공한다는 장점이
+          있습니다.
+        </p>
+
+        <pre><code># TCP 서버 예시 (에코 서버)
+import socket
+server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_sock.bind(("0.0.0.0", 8888))
+server_sock.listen()
+conn, addr = server_sock.accept()      # 연결 수락
+print("클라이언트 연결:", addr)
+data = conn.recv(1024)
+print("받은 데이터:", data.decode())
+conn.send(data)                        # 에코
+conn.close()
+server_sock.close()
+
+# TCP 클라이언트 예시
+client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_sock.connect(("server.ip.address", 8888))
+msg = "Hello TCP".encode()
+client_sock.send(msg)
+data = client_sock.recv(1024)
+print("서버 응답:", data.decode())
+client_sock.close()</code></pre>
+
+        <h2>요약 및 학습 팁</h2>
+        <p>
+          소켓은 애플리케이션이 네트워크와 소통하는 창구입니다.
+          <strong>UDP 소켓</strong>은 가볍고 빠르지만 신뢰성이 없고,
+          <strong>TCP 소켓</strong>은 연결 기반의 신뢰성 있는 통신을 제공합니다.
+        </p>
+        <ul>
+          <li>
+            <strong>학습 팁:</strong> 직접 에코 서버/클라이언트를 코딩하고, 여러
+            클라이언트를 동시에 접속시켜 동작을 관찰해 보세요.
+          </li>
+          <li>
+            <strong>추가 참고:</strong> 논블로킹 소켓, select/poll 멀티플렉싱,
+            TLS를 이용한 보안 소켓 등 고급 주제도 탐구해 보세요.
+          </li>
+        </ul>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

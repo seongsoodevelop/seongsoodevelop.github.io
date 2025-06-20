@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>P2P 애플리케이션과 파일 공유</title>
+
+    <!-- 🌐 블로그 공통 스타일 그대로 유지 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      pre {
+        background: #f1f5f9;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>P2P 애플리케이션과 파일 공유</h2>
+      </header>
+
+      <article class="post-content">
+        <h2>목차</h2>
+        <ul>
+          <li>P2P 파일 공유 개요와 역사</li>
+          <li>파일 분배: 클라이언트-서버 vs P2P 비교</li>
+          <li>BitTorrent 프로토콜의 동작 방식</li>
+          <li>기타 P2P 응용 사례</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2>P2P 파일 공유 개요와 역사</h2>
+        <p>
+          P2P(Peer-to-Peer) 파일 공유는
+          <strong>사용자들끼리 직접 파일을 주고받는</strong> 형태의
+          애플리케이션으로, 1990년대 말부터 폭발적인 인기를 끌었습니다. 그
+          시작은 1999년 등장한 <strong>Napster</strong>로, 음악 파일(MP3)을
+          사용자들 간에 공유하는 혁신적 서비스였습니다. Napster는 중앙 서버에
+          전세계 사용자가 가진 음악 목록을 모아두고, 사용자가 찾는 노래가 어떤
+          피어(사용자)에 있는지 중개해 준 후, 실제 파일 전송은
+          <strong>사용자들 간(P2P)</strong> 직접 이루어지게 했습니다. Napster
+          이후, <strong>Gnutella</strong> 등의 <strong>순수 분산형</strong> P2P
+          네트워크도 등장했는데, 이러한 시스템에서는 중앙 서버 없이 피어들이
+          서로 검색 질의를 전달(flooding)하며 원하는 파일을 찾아냈습니다. 하지만
+          Gnutella 방식은 네트워크 부하가 매우 커서 효율 문제가 있었고, 이후
+          <strong>BitTorrent</strong>와 같은
+          <strong>효율적인 P2P 프로토콜</strong>이 주류가 되었습니다. P2P 파일
+          공유는 음악, 영화 등의 대용량 콘텐츠를 효과적으로 유통시킬 수 있어
+          한때 인터넷 트래픽의 상당 부분을 차지했으며, 사용자 간 협력을 통한
+          자원 공유라는 새로운 패러다임을 제시했습니다.
+        </p>
+
+        <h2>파일 분배: 클라이언트-서버 vs P2P 비교</h2>
+        <p>
+          대용량 파일을 다수의 사용자에게 배포(distribute)하는 방법을
+          생각해봅시다. 전통적인 <strong>클라이언트-서버 방식</strong>에서는 한
+          대의 서버가 N명의 사용자 각각에게 파일을 전송해야 하므로, 서버는
+          <strong>파일 크기의 N배에 해당하는 데이터</strong>를 전송해야 합니다.
+          예를 들어 1GB짜리 영화를 100명에게 보낸다면 서버는 총 100GB를
+          업로드해야 하고, 이는 서버의 업링크 대역폭에 큰 부담을 줍니다.
+        </p>
+        <p>
+          반면 <strong>P2P 방식</strong>에서는 처음 소수의 시드(seed, 초기
+          제공자)가 파일을 공유하기 시작하면, 파일을 받은 피어들이 다시
+          <strong>업로더(uploader)</strong>가 되어 다른 피어들에게 일부를
+          전송합니다. 시간이 지날수록 점점 더 많은 피어가 파일의 일부를 가지고
+          서로 교환하므로, 원 서버(혹은 시드)가 부담해야 할 총 전송량이 크게
+          줄고, <strong>분산 업로드</strong>를 통해 전체 네트워크의 효율이
+          높아집니다.
+        </p>
+
+        <h2>BitTorrent 프로토콜의 동작 방식</h2>
+        <p>
+          <strong>BitTorrent</strong>는 오늘날 가장 대표적인 P2P 파일 공유
+          프로토콜로, <strong>파일을 여러 조각(piece)으로 분할</strong>하여
+          다대다로 교환함으로써 효율적인 분배를 실현합니다. BitTorrent를 통해
+          파일을 공유하려면 먼저 해당 파일에 대한
+          <strong>“.torrent” 메타파일</strong>이 생성됩니다. 이 토렌트 파일에는
+          파일 이름, 크기, 조각 당 바이트 수, 각 조각의 해시값, 그리고
+          <strong>트래커(tracker)</strong>라고 불리는 관리 서버의 주소 등이 들어
+          있습니다. 파일을 받고자 하는 사용자는 토렌트 파일을 열어
+          <strong>BitTorrent 클라이언트</strong> 프로그램으로 로드합니다. 그러면
+          클라이언트는 토렌트 파일에 명시된 트래커에게 접속하여, 현재 그 파일을
+          공유 중인 피어들의 목록을 요청합니다. 트래커는
+          <strong>스웜(swarm)</strong>이라고 불리는 피어 집합 정보를 제공해주며,
+          이후부터는 <strong>피어들 간에 직접 통신</strong>이 이루어집니다.
+        </p>
+
+        <p>
+          BitTorrent의 피어들은 파일 조각 단위로 데이터를 주고받는데,
+          <strong>자신이 아직 받지 못한 조각을 다른 피어로부터 다운로드</strong
+          >하고, 동시에 자신이 가진 조각을 필요로 하는 다른 피어에게
+          <strong>업로드</strong>합니다. 중요한 전략은
+          <strong>“희귀한 조각 우선(Rarest First)”</strong>과
+          <strong>“Tit-for-Tat”</strong>입니다. 희귀한 조각 우선은 스웜 내에서
+          소수의 피어만 가진 희귀한 조각을 우선 내려받도록 함으로써, 모든 조각이
+          고르게 퍼지게 하여 <strong>전체 완전 분배를 촉진</strong>합니다.
+          Tit-for-Tat은 <strong>게임이론적 상호성 전략</strong>으로, 간단히 말해
+          <strong
+            >자신에게 업로드해주는 피어에게 우선적으로 나도 업로드를
+            제공</strong
+          >하는 방식입니다. 이를 통해 <strong>무임승차(free-riding)</strong>를
+          억제하고, 업로드에 기여하는 피어들이 더 빠른 다운로드를 얻도록
+          인센티브를 부여합니다.
+        </p>
+
+        <h2>기타 P2P 응용 사례</h2>
+        <p>
+          P2P 기술은 파일 공유 외에도 여러 분야에 응용되었습니다.
+          <strong>Skype</strong>와 같은 P2P 인터넷 전화는 초창기에는 중앙 서버에
+          거의 의존하지 않고, 사용자의 PC들을 <strong>슈퍼 노드</strong>로
+          활용하여 통화 경로를 중계하는 구조를 사용했습니다. 또한 최근에는
+          <strong>분산 스토리지</strong>나
+          <strong>블록체인 네트워크</strong> 등에서 P2P 개념이 활용되고
+          있습니다.
+        </p>
+
+        <h2>요약 및 학습 팁</h2>
+        <p>
+          이번 글에서는 P2P 애플리케이션의 대표 사례인 파일 공유에 대해
+          알아보고, 특히 BitTorrent 프로토콜의 작동 원리를 중점적으로
+          살펴보았습니다.
+        </p>
+        <ul>
+          <li>
+            <strong>학습 팁:</strong> 실제로 토렌트 클라이언트를 사용해보고,
+            <em>속도 변화</em>나 <em>피어 수에 따른 성능 변화</em>를
+            관찰해보세요.
+          </li>
+          <li>
+            <strong>추가 참고:</strong> P2P 분야의 고전 문제인
+            <em>Free-rider</em> 문제와 인센티브 구조도 살펴보면 좋습니다.
+          </li>
+          <li>
+            <strong>요약 정리:</strong>
+            <em>P2P 파일 공유는 참여자가 많을수록 효율이 증가</em>한다는 점이
+            핵심입니다.
+          </li>
+        </ul>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

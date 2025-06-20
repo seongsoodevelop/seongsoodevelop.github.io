@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IP 데이터그램 구조·단편화·전송 방식</title>
+
+    <!-- 🌐 공통 블로그 스타일 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>IP 데이터그램 구조와 단편화, 그리고 IP 전송 방식</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li><a href="#ip-데이터그램-구조">IP 데이터그램 구조</a></li>
+          <li>
+            <a href="#ip-단편화-fragmentation">IP 단편화(Fragmentation)</a>
+          </li>
+          <li><a href="#ip의-전송-특성-및-방식">IP의 전송 특성 및 방식</a></li>
+          <li><a href="#요약-및-학습-팁-1">요약 및 학습 팁</a></li>
+        </ul>
+
+        <h2 id="ip-데이터그램-구조">IP 데이터그램 구조</h2>
+        <p>
+          IP 네트워크에서 전송되는 <strong>패킷</strong>은 일반적으로
+          <strong>IP 데이터그램(datagram)</strong>이라고 불리며, 고정된 형식의
+          <strong>헤더(header)</strong>와 <strong>데이터(payload)</strong>로
+          구성됩니다. 아래 그림은 <strong>IPv4 데이터그램의 헤더 구조</strong>를
+          나타낸 것입니다. IPv4 헤더는 총 <strong>32비트(4바이트)</strong> 폭의
+          행으로 이루어져 있으며, 최소 <strong>20바이트</strong> 길이로 고정
+          부분이 존재하고 옵션에 따라 최대 <strong>60바이트</strong>까지 확장될
+          수 있습니다. 각 필드는 네트워크 계층에서
+          <strong>패킷을 전달하거나 관리하는 데 필요한 정보</strong>를 담고
+          있습니다. 중요한 헤더 필드들을 하나씩 살펴보겠습니다.
+        </p>
+
+        <ul>
+          <li>
+            <strong>Version</strong>: IP 프로토콜의 버전을 나타내는 4비트
+            필드로, IPv4의 경우 값이 4입니다. 이 필드를 통해 라우터들은 패킷이
+            IPv4인지 IPv6인지를 구분합니다.
+          </li>
+          <li>
+            <strong>IHL (Internet Header Length)</strong>: 헤더 길이를 지정하는
+            4비트 필드로, 32비트 워드 단위로 헤더의 길이를 나타냅니다. IPv4
+            헤더의 최소값은 5 (5×4바이트 = 20바이트)이며 옵션 포함 시 최대 15
+            (60바이트)까지 커질 수 있습니다.
+          </li>
+          <li>
+            <strong>Type of Service (서비스 유형)</strong>: 8비트 필드로 패킷의
+            우선순위나 지연, 처리량, 신뢰성 등에 대한 힌트를 제공하는 값입니다.
+            초기에는 단순 TOS로 정의되었으나 현대 IP망에서는
+            <strong>DSCP(Differentiated Services Code Point)</strong> 값으로
+            사용되어 QoS를 구현하는 데 활용되기도 합니다.
+          </li>
+          <li>
+            <strong>Total Length</strong>: 패킷
+            <strong>전체의 길이</strong>(헤더+데이터)를 16비트로 표시합니다.
+            따라서 IP 패킷의 이론상 최대 크기는 65,535바이트입니다.
+          </li>
+          <li>
+            <strong>Identification, Flags, Fragment Offset</strong>: 이 세
+            필드는 서로 연관되어 <strong>IP 단편화</strong>에 사용됩니다.
+            <em>Identification</em>(16비트)은 호스트가 보낸 각 데이터그램에
+            번호를 매겨, 단편화되었을 때 같은 데이터그램의 조각들을 식별하는
+            값입니다. <em>Flags</em>(3비트)는 단편화 제어 플래그로, 하나는
+            <code>DF</code>(Don’t Fragment) 비트, 다른 하나는
+            <code>MF</code>(More Fragments) 비트입니다.
+            <em>Fragment Offset</em>(13비트)은 단편화된 조각의
+            <strong>원본 데이터그램 내 위치</strong>를 가리키며 8바이트 단위로
+            계산합니다.
+          </li>
+          <li>
+            <strong>Time To Live (TTL)</strong>: 8비트 필드로
+            <strong>패킷의 수명</strong>을 표시합니다. TTL은 라우터를 한 번 지날
+            때마다 1씩 감소하고, 값이 0이 되면 폐기되어 루프를 방지합니다.
+          </li>
+          <li>
+            <strong>Protocol</strong>: 상위 계층 프로토콜 정보를 담는 8비트
+            필드입니다. 예) TCP=6, UDP=17, ICMP=1.
+          </li>
+          <li>
+            <strong>Header Checksum</strong>: 16비트 체크섬 값으로,
+            <strong>IP 헤더에 오류가 없는지 검사</strong>합니다. (페이로드는
+            포함하지 않습니다.)
+          </li>
+          <li>
+            <strong>Source Address &amp; Destination Address</strong>: 각각
+            32비트씩으로 <strong>발신지‧목적지 IP 주소</strong>를 담습니다.
+          </li>
+          <li>
+            <strong>Options &amp; Padding</strong>: 필요 시 사용되는 가변
+            필드로, 기록 경로, 소스 라우팅, 타임스탬프 등 특수 기능 정보를
+            담습니다.
+          </li>
+        </ul>
+
+        <p>
+          IPv4 헤더 이후에는 <strong>데이터(payload)</strong>가 이어집니다.
+          일반적인 패킷은 옵션이 없기에 헤더 길이가 20바이트이며,
+          TCP(20바이트)까지 합치면 최소 40바이트의 오버헤드가 발생합니다.
+        </p>
+
+        <h2 id="ip-단편화-fragmentation">IP 단편화 (Fragmentation)</h2>
+        <p>
+          IP 프로토콜의 중요한 특징 중 하나는
+          <strong>단편화(fragmentation)</strong>와
+          <strong>재조립(reassembly)</strong>입니다. 단편화가 필요한 이유는
+          경로를 구성하는 각 링크의 <em>MTU(Maximum Transmission Unit)</em>가
+          서로 다를 수 있기 때문입니다.
+        </p>
+
+        <p>
+          IPv4에서는 <strong>라우터</strong>가 단편화를 수행할 수 있습니다.
+          라우터는 MTU보다 큰 패킷을 조각으로 나눠 전송하고,
+          <strong>최종 목적지 IP 계층</strong>이 조각을 다시 합칩니다. 예를 들어
+          4,000바이트 데이터그램이 MTU 1,500바이트 링크를 지나야 한다면, 데이터
+          1,480바이트씩 3개 조각으로 나누어 전송하고, 마지막 조각은 MF 플래그를
+          0으로 설정합니다.
+        </p>
+
+        <p>
+          단편화는 유연성을 제공하지만, 조각 중 하나만 유실돼도 전체
+          데이터그램이 손실되는 단점이 있습니다. 이에 IPv6는 라우터 단편화를
+          없애고, <em>Path MTU Discovery</em>로 송신 호스트가 적절한 크기를
+          찾도록 설계되었습니다.
+        </p>
+
+        <h2 id="ip의-전송-특성-및-방식">IP의 전송 특성 및 방식</h2>
+        <p>
+          IP는
+          <strong>비연결형(connectionless)·베스트 에포트(best-effort)</strong>
+          전달 방식을 취합니다. 패킷마다 독립적으로 라우팅되며, 전송
+          성공·지연·대역폭에 대해 어떤 보장도 하지 않습니다. 신뢰성·순서 보장은
+          TCP 등 상위 계층의 책임입니다.
+        </p>
+
+        <p>전송 방식은 크게 다음과 같습니다.</p>
+        <ul>
+          <li>
+            <strong>유니캐스트(unicast)</strong> – 1:1 통신(인터넷 트래픽
+            대부분).
+          </li>
+          <li>
+            <strong>브로드캐스트(broadcast)</strong> – 같은 네트워크 모든 호스트
+            대상(IPv4 255.255.255.255 등).
+          </li>
+          <li>
+            <strong>멀티캐스트(multicast)</strong> – 특정 그룹 다수 대상(IPv4
+            224.0.0.0~239.255.255.255).
+          </li>
+          <li>
+            <strong>애니캐스트(anycast, IPv6)</strong> – 여러 후보 중 가장
+            가까운 노드 하나로 전달.
+          </li>
+        </ul>
+
+        <h2 id="요약-및-학습-팁-1">요약 및 학습 팁</h2>
+        <p>
+          <strong>(1)</strong> IP 헤더는 주소·길이·식별자·TTL 등 패킷 전달 관리
+          정보를 담는다.<br />
+          <strong>(2)</strong> 단편화는 서로 다른 MTU 환경에서 큰 패킷을
+          전송하기 위한 기능이지만, 가능하면 피해야 한다.<br />
+          <strong>(3)</strong> IP는 베스트-에포트이므로, 신뢰성·순서는 상위
+          계층이 책임진다.
+        </p>
+
+        <p>
+          <em>Tip.</em> Identification/Flags/Offset 계산을 직접 해보고,
+          Wireshark로 실제 IP 패킷 헤더를 들여다보며 학습하면 이해가 빠릅니다.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

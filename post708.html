@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이동성과 상위 계층 프로토콜</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>이동성과 상위 계층 프로토콜</h2>
+      </header>
+
+      <article class="post-content">
+        <h2>목차</h2>
+        <ul>
+          <li>이동/무선 환경이 상위 계층에 미치는 영향 개요</li>
+          <li>무선 환경의 패킷 손실과 TCP 성능 문제</li>
+          <li>이동 시 연결 지연 및 실시간 서비스 영향</li>
+          <li>제한된 대역폭과 애플리케이션 고려사항</li>
+        </ul>
+
+        <h2>이동/무선 환경이 상위 계층에 미치는 영향 개요</h2>
+        <p>
+          무선 및 이동 환경은 상위 계층인 TCP/UDP와 애플리케이션 계층에
+          직접적이지 않지만 성능적인 영향을 미칩니다. 무선 링크는 패킷 손실,
+          지연, 낮은 대역폭 등의 특성을 가져 상위 계층이 이를 흡수하거나
+          최적화해야 합니다. 계층적 설계 원칙에도 불구하고, 모바일 환경에서는
+          상위 계층의 대응이 중요합니다.
+        </p>
+
+        <h2>무선 환경의 패킷 손실과 TCP 성능 문제</h2>
+        <p>
+          TCP는 손실을 혼잡으로 간주해 전송 속도를 줄입니다. 하지만 무선에서는
+          물리적 오류가 손실의 주요 원인이 될 수 있어, TCP가 불필요하게 속도를
+          줄여 성능이 떨어질 수 있습니다. 이를 보완하기 위해 ARQ 재전송, Snoop
+          프록시, TCP 최적화가 연구되었고, 최근에는 QUIC과 같은 새로운
+          프로토콜도 등장하고 있습니다.
+        </p>
+
+        <h2>이동 시 연결 지연 및 실시간 서비스 영향</h2>
+        <p>
+          핸드오프나 네트워크 전환은 지연과 단절을 초래할 수 있습니다. 이는
+          TCP는 재전송과 윈도우 축소로, UDP 기반 실시간 서비스는 끊김, 지터 등
+          품질 저하로 나타납니다. IP 변경은 기존 세션 단절을 일으키며,
+          애플리케이션은 이를 감지하고 재접속을 처리해야 합니다.
+        </p>
+
+        <h2>제한된 대역폭과 애플리케이션 고려사항</h2>
+        <p>
+          무선은 유선 대비 대역폭이 낮고 변동성이 큽니다. 이를 극복하기 위해
+          적응형 스트리밍, 연결 재사용, HTTP/2, HTTP/3 같은 프로토콜 최적화가
+          활용됩니다. 또한 푸시 기반 통신, 데이터 최소화, 암호화 적용 등이
+          모바일 앱에서 권장됩니다.
+        </p>
+
+        <h2>요약 및 학습 팁</h2>
+        <p>
+          <strong>요약:</strong> 무선 및 이동성은 상위 계층에 성능 저하
+          요소(손실, 지연, 대역폭 제약)를 유발하며, 이를 완화하기 위해 종단 및
+          애플리케이션 최적화가 필요합니다. TCP, UDP, 애플리케이션 설계 시 이를
+          고려한 대응 전략이 중요합니다.
+        </p>
+        <p>
+          <strong>학습 팁:</strong> 무선 환경에서 ping, 다운로드 실험으로 성능
+          차이를 체감하거나, Wireshark로 TCP 혼잡 제어 동작을 살펴보세요. 최신
+          프로토콜 동향(QUIC, 5G MEC 등)을 읽어보는 것도 도움이 됩니다.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

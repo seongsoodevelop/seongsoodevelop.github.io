@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSL을 통한 안전한 전송</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>SSL을 통한 안전한 전송</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>SSL/TLS 개요와 기능</li>
+          <li>SSL 핸드셰이크 과정</li>
+        </ul>
+
+        <p>
+          이번 글에서는 <strong>SSL</strong>(Secure Sockets Layer) 프로토콜을
+          통해 인터넷에서 데이터를 안전하게 주고받는 방법을 정리합니다. SSL은
+          오늘날 <strong>TLS</strong>(Transport Layer Security)라는 이름으로 더
+          많이 불리며, 웹 브라우저와 웹 서버 간 암호화 통신의 표준입니다. 우리가
+          흔히 보는 <code>https://</code>로 시작하는 URL이 바로 SSL/TLS 보안
+          통신을 의미합니다. SSL은 응용 계층과 전송 계층 사이에 위치한
+          프로토콜로, 애플리케이션 데이터가 네트워크로 전송되기 전에
+          <strong>암호화</strong> 및 <strong>무결성 보호</strong>를 수행합니다.
+          이를 통해 신용카드 번호와 같은 민감한 정보도 인터넷을 통해 안심하고
+          주고받을 수 있게 됩니다.
+        </p>
+
+        <h2 id="개요">SSL/TLS 개요와 기능</h2>
+        <p>
+          SSL은 1990년대 중반 <strong>넷스케이프(Netscape)</strong>에 의해
+          구현된 이후 널리 배포된 <strong>보안 프로토콜</strong>입니다. 현재는
+          표준화된 TLS로 발전하여 웹 브라우징, 전자 우편, VPN 등 다양한 응용에서
+          사용되고 있습니다. SSL/TLS가 제공하는 가장 큰 기능은
+          <strong>기밀성</strong>, <strong>무결성</strong>,
+          <strong>인증</strong>입니다.
+        </p>
+        <ul>
+          <li>
+            기밀성: 대칭키 암호화를 통해 클라이언트와 서버 간 데이터가 중간에서
+            탈취되더라도 내용이 보호됩니다.
+          </li>
+          <li>
+            무결성: 메시지에 해시와 MAC을 적용해 데이터가 위변조되지 않았음을
+            보장합니다.
+          </li>
+          <li>
+            인증: 서버 인증(필요시 클라이언트 인증)을 통해 신뢰할 수 있는 통신
+            상대인지 검증합니다.
+          </li>
+        </ul>
+        <p>
+          이러한 SSL의 보안 메커니즘 덕분에 오늘날 전자상거래에서 수조 원 규모의
+          거래가 안전하게 이루어지고 있습니다. 온라인 쇼핑몰에서 신용카드 정보를
+          입력할 때, SSL 암호화 통신이 적용되어 있다면 그 정보는 암호화되어
+          전송되므로 도청당하더라도 악용될 수 없습니다.
+        </p>
+
+        <h2 id="핸드셰이크">SSL 핸드셰이크 과정</h2>
+        <p>
+          SSL 통신이 시작될 때 클라이언트와 서버는
+          <strong>핸드셰이크</strong> 과정을 거쳐 안전한 세션을 수립합니다.
+          절차는 다음과 같습니다:
+        </p>
+        <ul>
+          <li>
+            클라이언트가 Client Hello를 보내며 SSL/TLS 버전, 암호 모음, 임의
+            난수 등을 전달합니다.
+          </li>
+          <li>
+            서버가 Server Hello로 암호 알고리즘을 선택하고, 임의 난수를
+            전달합니다.
+          </li>
+          <li>
+            서버가 자신의 디지털 인증서를 클라이언트에 전송하고, 클라이언트는
+            이를 검증해 서버 신원을 확인합니다.
+          </li>
+          <li>
+            클라이언트는 Pre-Master Secret을 생성하여 서버의 공개키로 암호화해
+            전달합니다.
+          </li>
+          <li>
+            양측은 동일한 세션 키를 생성하고 Change Cipher Spec, Finished
+            메시지를 주고받은 뒤 암호화된 데이터 전송을 시작합니다.
+          </li>
+        </ul>
+        <p>
+          핸드셰이크에서 공개키 암호화는 세션 키 교환에만 사용되고, 데이터
+          전송은 대칭키 암호화로 처리되므로 보안과 효율성을 모두 얻을 수
+          있습니다. 최신 TLS 1.3은 이 절차를 더욱 간소화하고 보안을
+          강화했습니다.
+        </p>
+
+        <p>
+          <strong>요약:</strong> SSL/TLS는 인터넷 통신에
+          <strong>기밀성</strong>, <strong>무결성</strong>,
+          <strong>인증</strong>을 제공하는 필수 보안 프로토콜입니다. 이를 통해
+          사용자는 웹 브라우징이나 온라인 거래 시 개인정보가 보호된다는 신뢰를
+          가질 수 있으며, 기업은 안전한 전자상거래를 운영할 수 있습니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> Wireshark로 HTTPS 트래픽을 캡처해 Client Hello와
+          Server Hello 패킷을 분석하고, 브라우저의 인증서 정보를 직접
+          확인해보세요. 이런 관찰을 통해 SSL/TLS의 동작 원리를 더 명확히 이해할
+          수 있습니다.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

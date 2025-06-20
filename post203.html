@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>웹과 HTTP</title>
+
+    <!-- ✔️ 블로그 공통 스타일 그대로 유지 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      pre {
+        background: #f1f5f9;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>웹과 HTTP</h2>
+      </header>
+
+      <article class="post-content">
+        <h2>목차</h2>
+        <ul>
+          <li>웹과 HTTP 개요</li>
+          <li>HTTP 요청과 응답 메시지</li>
+          <li>비지속성 연결 vs 지속성 연결</li>
+          <li>쿠키를 통한 상태 유지</li>
+          <li>웹 캐시와 프록시 서버</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2>웹과 HTTP 개요</h2>
+        <p>
+          <strong>월드 와이드 웹(World Wide Web)</strong>은 인터넷 상에서
+          <strong>하이퍼텍스트 문서(웹 페이지)</strong>를 연결하고 제공하는
+          거대한 분산 시스템입니다. 웹의 핵심은
+          <strong>HTTP(HyperText Transfer Protocol)</strong>라는 애플리케이션
+          계층 프로토콜로, 웹 브라우저(클라이언트)와 웹 서버가 이 프로토콜을
+          사용해 통신합니다. HTTP는 <strong>클라이언트-서버 모델</strong>을
+          따르며, 기본적으로 <strong>TCP 연결(주로 포트 80)</strong> 위에서
+          동작합니다. 한 번의 웹 객체(HTML 파일, 이미지 등) 전송을 위한 HTTP
+          교환을 <em>트랜잭션</em>이라고 할 때, 클라이언트가 서버에 HTTP 요청을
+          보내고 서버가 이에 대한 HTTP 응답을 반환하는 방식으로 웹 리소스를
+          주고받습니다. HTTP 프로토콜의 중요한 특징 중 하나는
+          <strong>무상태(stateless)</strong> 프로토콜이라는 점인데, 이는 각 요청
+          간에 서버가 클라이언트의 상태(이전에 무슨 요청을 했는지 등)를 유지하지
+          않는다는 의미입니다. 이러한 설계는 단순성과 확장성을 높여주지만,
+          필요에 따라 <strong>쿠키</strong> 등을 이용해 상태 유지를 보완하게
+          됩니다 (뒤에서 설명). 최신 웹 환경에서는 HTTP/1.1, HTTP/2, HTTP/3 등의
+          발전된 버전을 사용하지만, 기본적인 동작 원리는 여전히 클라이언트-서버
+          간 요청/응답 교환입니다.
+        </p>
+
+        <h2>HTTP 요청과 응답 메시지</h2>
+        <p>
+          HTTP에서 클라이언트와 서버는 정해진 형식의
+          <strong>텍스트 기반 메시지</strong>를 주고받습니다. 클라이언트가
+          보내는 <strong>HTTP 요청(request)</strong> 메시지는 메소드, 경로,
+          프로토콜 버전과 헤더들로 구성되며, 선택적으로 본문(body)을 포함할 수
+          있습니다. 서버의 <strong>HTTP 응답(response)</strong> 메시지는
+          프로토콜 버전, 상태 코드와 설명 문구, 헤더들, 그리고 응답 본문으로
+          이루어집니다. 예를 들어 웹 브라우저가 어떤 페이지를 가져오기 위해 보낼
+          수 있는 요청과 이에 대한 서버의 응답 예시는 다음과 같습니다:
+        </p>
+
+        <pre><code>GET /index.html HTTP/1.1  
+Host: www.example.com  
+User-Agent: ExampleBrowser/1.0  
+
+HTTP/1.1 200 OK  
+Content-Type: text/html; charset=UTF-8  
+Content-Length: 1024  
+
+&lt;html&gt;
+  ... 웹 페이지 내용 ...
+&lt;/html&gt;</code></pre>
+
+        <p>
+          위의 예에서, 클라이언트는 GET 메소드를 사용하여
+          <code>/index.html</code> 경로의 자원을 요청했고, HTTP/1.1 버전을
+          명시하고 있습니다. 서버는 200 OK로 요청이 성공적으로 처리되었음을
+          알리고, 응답 헤더를 통해 콘텐츠의 유형과 크기 등을 알려준 후 HTML
+          본문을 보내줍니다.
+        </p>
+
+        <h2>비지속성 연결 vs 지속성 연결</h2>
+        <p>
+          초기의 HTTP/1.0 프로토콜에서는
+          <strong>비지속성(non-persistent) 연결</strong>을 사용하여, 하나의
+          요청/응답을 완료하면 TCP 연결을 바로 끊었습니다. 이는 연결 설정과 해제
+          과정을 매번 거치므로 <strong>지연 시간</strong>이 늘어나는 단점이
+          있었습니다. 이를 개선하기 위해 HTTP/1.1부터는
+          <strong>지속성(persistent) 연결</strong>이 기본으로 도입되었습니다.
+          지속성 연결에서는 한 번 맺은 TCP 연결을 유지한 채로, 같은 서버에 대한
+          <strong>여러 HTTP 요청을 연속적으로 보낼 수</strong> 있습니다.
+        </p>
+
+        <h2>쿠키를 통한 상태 유지</h2>
+        <p>
+          HTTP는 <strong>무상태 프로토콜</strong>이므로, 웹 서버는 기본적으로
+          이전에 동일 클라이언트가 무엇을 했는지 알 수 없습니다. 그러나 웹
+          애플리케이션에서는 사용자의 로그인 상태 유지나 장바구니 정보 등
+          <strong>상태 정보</strong>가 필요한 경우가 많습니다. 이를 가능하게
+          해주는 표준 기술이 <strong>쿠키(cookie)</strong>입니다.
+        </p>
+
+        <h2>웹 캐시와 프록시 서버</h2>
+        <p>
+          <strong>웹 캐시(Web Cache)</strong> 또는
+          <strong>프록시 서버(Proxy Server)</strong>는 클라이언트와 실제 웹 서버
+          사이에 위치하여, 자주 요청되는 웹 리소스를 저장해두었다가 빠르게
+          제공해주는 중간 노드입니다. 예를 들어 어떤 대학 내 프록시 서버가 인기
+          있는 웹 페이지를 캐싱하고 있다면, 같은 대학 사용자들이 그 페이지를
+          요청할 때 매번 원격 서버까지 가지 않고 프록시가 대신 응답하여
+          <strong>대기 시간</strong>을 줄이고 <strong>대역폭 사용량</strong>을
+          절약할 수 있습니다.
+        </p>
+
+        <h2>요약 및 학습 팁</h2>
+        <p>
+          이번 글에서는 웹의 핵심 프로토콜인 HTTP의 구조와 주요 특징들에 대해
+          살펴보았습니다. HTTP의 요청/응답 메시지 형식, 지속적 연결의 도입,
+          쿠키를 통한 상태 관리, 그리고 캐시/프록시를 통한 성능 개선 등을
+          이해하는 것이 웹 동작 원리를 파악하는 데 중요합니다.
+        </p>
+        <ul>
+          <li>
+            <strong>학습 팁:</strong> 개발자 도구를 열어 실제 HTTP 요청/응답을
+            관찰해 보세요.
+          </li>
+          <li>
+            <strong>추가 참고:</strong> HTTP/2와 HTTP/3에서 도입된 멀티플렉싱,
+            헤더 압축, QUIC 등도 비교 학습해보세요.
+          </li>
+          <li>
+            <strong>요약 정리:</strong>
+            <em>HTTP는 무상태 요청-응답 프로토콜</em>이며, 효율적인 웹 서비스를
+            위해 <strong>지속 연결·쿠키·캐시</strong>를 활용합니다.
+          </li>
+        </ul>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

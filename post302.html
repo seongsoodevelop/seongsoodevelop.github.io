@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>다중화와 역다중화</title>
+
+    <!-- ▣ 공통 스타일 (기존 글과 동일) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>다중화와 역다중화</h2>
+      </header>
+
+      <article class="post-content">
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>다중화 (Multiplexing)</li>
+          <li>역다중화 (Demultiplexing)</li>
+          <li>포트 번호와 소켓</li>
+        </ul>
+
+        <h2 id="다중화-multiplexing">다중화 (Multiplexing)</h2>
+        <p>
+          <strong>다중화</strong>는 송신 측 호스트에서
+          <strong
+            >여러 애플리케이션 프로세스의 데이터를 하나의 통신 회선으로 모아
+            보내는 과정</strong
+          >을 뜻합니다. 한 호스트에서는 동시에 여러 프로그램이 네트워크 통신을
+          할 수 있는데, 전송 계층은 각 프로세스가 보내는 데이터를 개별적으로
+          처리하면서도 이를
+          <strong
+            >네트워크 계층으로 효과적으로 전달하기 위해 하나의 스트림으로
+            결합</strong
+          >합니다. 송신 호스트의 전송 계층은 각 응용 메시지에 전송 계층
+          <strong>헤더(포트 번호 등)</strong>를 붙여
+          <strong>세그먼트(segment)</strong>를 만들고, 이렇게 생성된
+          세그먼트들을 네트워크 계층으로 전달합니다. 여러 프로세스의 데이터가
+          <strong>동시에 송신</strong>되더라도 전송 계층의 다중화를 통해
+          한꺼번에 네트워크로 흘러들어갈 수 있습니다. 이는 마치 여러 개의
+          개울물이 하나의 큰 강으로 합쳐져 흐르는 모습과 비슷하며, 이러한
+          다중화를 통해 <strong>네트워크 리소스(링크)</strong>를 효율적으로
+          사용할 수 있습니다.
+        </p>
+
+        <p>
+          다중화의 한 예로, 한 컴퓨터에서 <strong>웹 브라우저</strong>와
+          <strong>게임 클라이언트</strong>가 동시에 인터넷에 데이터를 보낸다고
+          생각해봅시다. 웹 브라우저는 웹 서버로 HTTP 요청을 보내고, 게임
+          클라이언트는 게임 서버로 상태 업데이트 패킷을 보낼 수 있습니다. 전송
+          계층은 각각의 응용 데이터에 웹 브라우저용 포트 번호와 게임용 포트
+          번호를 붙이고, 이를 모두 <strong>IP 패킷</strong>으로 만들어
+          인터넷으로 내보냅니다. 네트워크 층에서는 이 둘을 구분하지 않고 단순히
+          패킷으로 취급하여 전달하지만, 송신 측 전송 계층 덕분에 두 응용의
+          데이터가 한 통신 채널로
+          <strong>섞여서 보내질 수 있게(다중화)</strong> 되는 것이죠. 이
+          과정에서 각 패킷에는 출발지 애플리케이션을 식별할 수 있는 정보가 담겨
+          있으므로 수신 측에서 다시 갈라놓을 수 있습니다.
+        </p>
+
+        <h2 id="역다중화-demultiplexing">역다중화 (Demultiplexing)</h2>
+        <p>
+          <strong>역다중화</strong>는 수신 측 호스트에서
+          <strong
+            >도착한 세그먼트를 개별 응용 프로세스에 맞게 분리하여 전달하는
+            과정</strong
+          >을 말합니다. 수신 호스트의 전송 계층은 수신된 세그먼트의
+          <strong>헤더에 있는 정보(특히 목적지 포트 번호)</strong>를 확인하여,
+          그 세그먼트가 <strong>어느 소켓으로 보내져야 할지</strong> 결정합니다.
+          구체적으로, 호스트에 도착한 각
+          <strong>IP 패킷(데이터그램)</strong>에는 발신지 IP 주소와 목적지 IP
+          주소가 있고, 그 내부의 전송 계층 <strong>세그먼트</strong>에는 발신지
+          및 목적지 <strong>포트 번호</strong>가 포함되어 있습니다. 수신
+          호스트의 전송 계층은 이 IP 주소와 포트 번호들을 키(key)로 사용하여
+          해당 세그먼트를 기다리고 있는 정확한 소켓(응용 프로세스)의 버퍼로
+          데이터를 전달합니다. 이러한 역다중화 과정을 통해 여러 응용 프로그램이
+          동시에 데이터르 수신하더라도
+          <strong
+            >각자 자신의 데이터만 받게 되며 혼선이 발생하지 않습니다</strong
+          >.
+        </p>
+
+        <p>
+          예를 들어 한 서버 컴퓨터가
+          <strong>여러 클라이언트로부터 동시에 요청</strong>을 받는 상황을
+          생각해봅시다. 이 서버는 웹 서버(포트 80)도 동작하고 있고, FTP
+          서버(포트 21)도 동작하고 있다고 가정합니다. 네트워크를 통해 이 서버로
+          들어오는 패킷들 중 어떤 것은 목적지 포트 번호 80을, 어떤 것은 21을
+          가지고 있을 것입니다. 서버의 전송 계층은 도착 패킷의
+          <strong>포트 번호를 확인하여</strong> 포트 80인 세그먼트는 웹 서버
+          애플리케이션의 소켓으로, 포트 21인 세그먼트는 FTP 서버 애플리케이션의
+          소켓으로 각각 전달합니다. 이처럼 <strong>역다중화</strong> 덕분에
+          하나의 서버가 여러 서비스를 동시에 운영할 수 있고, 각각의 서비스로
+          오는 네트워크 트래픽이 제대로 분류되어 처리될 수 있습니다.
+        </p>
+
+        <h2 id="포트-번호와-소켓">포트 번호와 소켓</h2>
+        <p>
+          전송 계층에서 다중화와 역다중화 기능이 올바르게 수행되기 위해서는
+          <strong>포트 번호(port number)</strong>와
+          <strong>소켓(socket)</strong> 개념을 이해해야 합니다.
+          <strong>포트 번호</strong>는 각 응용 프로세스에 고유하게 할당된 숫자
+          식별자입니다. 예를 들어, 일반적으로 웹 서버는 포트 번호 80, 이메일
+          수신 서버는 포트 25, DNS 서버는 포트 53 등의
+          <strong>잘 알려진 포트(well-known port)</strong> 번호를 사용합니다.
+          클라이언트 측에서도 임시로 할당되는 동적 포트 번호(예: 49152 이상의
+          범위)를 통해 통신의 출발지 포트를 지정합니다. 이렇게 출발지 IP:포트와
+          목적지 IP:포트로 이루어진 <strong>소켓 주소 쌍</strong>이 통신의
+          끝점을 식별하게 됩니다. <strong>소켓</strong>은 운영체제 상에서
+          네트워크 I/O를 담당하는 인터페이스로, 전송 계층은 수신 세그먼트를
+          소켓에 적절히 분배하고 송신 프로세스로부터 받은 데이터를 소켓을 통해
+          세그먼트로 캡슐화합니다.
+        </p>
+
+        <p>
+          특히 TCP의 경우에는
+          <strong
+            >4-튜플(발신지 IP, 발신지 포트, 목적지 IP, 목적지 포트)</strong
+          >
+          조합이 하나의 소켓을 유일하게 식별합니다. 이를 통해 동일한 서버 포트
+          번호(예: 80)라도, 접속해 오는 각 클라이언트를 발신지 IP와 포트로
+          구분하여 별개의 소켓(연결)으로 통신을 유지할 수 있습니다. 반면
+          UDP에서는 간단히 목적지 포트 번호만으로 수신 프로세스를
+          결정하며(발신지 정보는 특별히 사용되지 않는 경우가 많습니다), 여러
+          다른 발신지로부터 온 UDP 패킷이 <strong>동일한 포트 번호</strong>를
+          목적지로 가지고 있다면 모두 같은 소켓으로 들어옵니다.
+        </p>
+
+        <h2 id="요약">요약</h2>
+        <ul>
+          <li>
+            <strong>다중화</strong>: 송신 측 전송 계층이 여러 응용 프로세스의
+            데이터를 모아 네트워크로 내보냄.
+          </li>
+          <li>
+            <strong>역다중화</strong>: 수신 측 전송 계층이 도착 세그먼트를
+            올바른 소켓(프로세스)에 분배.
+          </li>
+          <li>
+            <strong>포트 번호</strong>와 <strong>소켓</strong> 정보가
+            다중화/역다중화의 열쇠이며, TCP는 4-튜플(IP+Port)로 연결을 식별함.
+          </li>
+        </ul>
+
+        <h2 id="학습-팁">학습 팁</h2>
+        <ol>
+          <li>
+            <strong>우체국 소인과 사서함</strong> 비유로 포트·소켓 개념을 떠올려
+            보세요.
+          </li>
+          <li>
+            간단한 소켓 프로그래밍 실습(TCP 에코 서버 등)으로 여러 클라이언트를
+            동시에 처리할 때 소켓이 어떻게 분리되는지 체험해 보세요.
+          </li>
+          <li>
+            패킷 캡처 도구(<code>Wireshark</code> 등)로 실제 세그먼트의
+            <em>포트 번호 필드</em>를 확인하며 이론을 눈으로 확인해 보세요.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DNS (도메인 이름 시스템)</title>
+
+    <!-- 📚 블로그 공통 스타일 유지 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      pre {
+        background: #f1f5f9;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>DNS (도메인 이름 시스템)</h2>
+      </header>
+
+      <article class="post-content">
+        <h2>목차</h2>
+        <ul>
+          <li>DNS 개요와 역할</li>
+          <li>DNS의 계층적 구조</li>
+          <li>도메인 이름 해석 과정</li>
+          <li>DNS 레코드 종류와 메시지 형식</li>
+          <li>DNS 캐싱과 갱신 메커니즘</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2>DNS 개요와 역할</h2>
+        <p>
+          <strong>DNS(Domain Name System)</strong>는 인터넷에서
+          <strong>도메인 이름을 IP 주소로 변환</strong>해주는
+          <strong>분산 데이터베이스</strong>이자 그것을 질의하는
+          <strong>프로토콜</strong>입니다. 우리 인간에게 친숙한 도메인 이름(예:
+          <code>www.example.com</code>)을 컴퓨터 네트워크에서 사용되는 숫자 IP
+          주소(예: <code>93.184.216.34</code>)로 바꾸는 서비스를 제공함으로써,
+          사용자는 복잡한 숫자를 외우지 않고도 원하는 서버에 접속할 수 있습니다.
+          DNS는 <strong>전화번호부</strong>에 비유되곤 하는데, 사람 이름에
+          해당하는 도메인 이름을 키로 하여, 전화번호에 해당하는 IP 주소를
+          찾아주는 역할을 하기 때문입니다. 하지만 DNS가 제공하는 것은 이뿐만이
+          아닙니다. 어떤 서비스의 이메일 서버 주소를 알려주는
+          <strong>MX 레코드</strong>, 도메인 별명(alias)을 위한
+          <strong>CNAME 레코드</strong> 등도 DNS를 통해 조회할 수 있습니다.
+          요약하면, DNS는 인터넷 서비스에
+          <strong>이름 기반의 식별 체계</strong>를 가능하게 하여, 사용 편의성과
+          유연성을 높여주는 핵심 인프라입니다.
+        </p>
+
+        <h2>DNS의 계층적 구조</h2>
+        <p>
+          DNS는 전세계에 흩어진 서버들이 하나의 거대한
+          <strong>계층적(hierarchical) 네임스페이스</strong>를 구성하는 형태로
+          동작합니다. 최상위에는 13개 군집(논리적으로 13개 명칭)의
+          <strong>루트 DNS 서버</strong>들이 존재하며, 모든 도메인 이름 질의의
+          시작점 역할을 합니다. 그 아래에는
+          <strong>최상위 도메인(TLD) 서버</strong>들이 있는데,
+          <code>.com</code>, <code>.org</code>, <code>.net</code>, 국가코드인
+          <code>.kr</code> 등 각 최상위 도메인별로 별도의 DNS 서버 군이
+          운영됩니다. 그 하위에는 개별 조직이나 기관의
+          <strong>권한(authoritative) DNS 서버</strong>가 있습니다.
+          authoritative 서버는 해당 조직이 보유한 도메인 이름(예:
+          <code>example.com</code>)에 대한
+          <strong>공식 IP 주소 정보를 저장</strong>하고 응답해주는 DNS
+          서버입니다.
+        </p>
+
+        <h2>도메인 이름 해석 과정</h2>
+        <p>
+          클라이언트(예: 웹 브라우저나 운영체제)는 어떤 도메인 이름에 대한 IP
+          주소가 필요할 때 <strong>DNS 조회</strong>를 수행합니다. 이 과정은
+          보통 클라이언트가 속한 네트워크의
+          <strong>로컬 DNS 서버(리졸버)</strong>에게 질의하는 것으로 시작됩니다.
+          예를 들어 사용자가 브라우저에 <code>www.example.com</code>을
+          입력했다면, 브라우저/OS는 ISP나 회사에서 제공하는 로컬 DNS 서버에
+          “www.example.com의 IP 주소를 알려주세요”라는 DNS 쿼리를 보냅니다. 로컬
+          DNS 서버는 자신이 해당 정보를 알고 있다면(캐시에 있다면) 바로
+          응답하지만, 없다면 <strong>재귀적(recursive) 질의</strong>를 통해 대신
+          찾아줍니다.
+        </p>
+
+        <h2>DNS 레코드 종류와 메시지 형식</h2>
+        <p>
+          DNS 서버들은 <strong>리소스 레코드(RR)</strong>라는 형식으로 데이터를
+          저장하고 응답합니다. 각 레코드는 이름, 타입, 값, TTL 등의 필드를
+          가지며, 예를 들어 <code>www.example.com</code>에 대한 A레코드는 이름이
+          “www.example.com”, 타입은 A, 값은 IPv4 주소, TTL은 유효 기간(초
+          단위)로 구성됩니다.
+        </p>
+        <ul>
+          <li><strong>A 레코드</strong> – 호스트 이름을 IPv4 주소로 매핑</li>
+          <li><strong>AAAA 레코드</strong> – 호스트 이름을 IPv6 주소로 매핑</li>
+          <li><strong>CNAME 레코드</strong> – 별칭을 다른 정식 이름에 매핑</li>
+          <li>
+            <strong>NS 레코드</strong> – 해당 도메인의 권한 DNS 서버를 가리킴
+          </li>
+          <li><strong>MX 레코드</strong> – 도메인의 메일 서버 주소 지정</li>
+        </ul>
+
+        <h2>DNS 캐싱과 갱신 메커니즘</h2>
+        <p>
+          DNS 효율성을 높이는 핵심 요소는 <strong>캐싱</strong>입니다. 로컬 DNS
+          서버는 질의 결과를 <strong>TTL</strong> 동안 저장해 두고, 같은 요청이
+          다시 들어오면 캐시로 빠르게 응답합니다. TTL이 지나면 정보가 만료되어
+          다시 상위 서버로부터 최신 데이터를 조회합니다.
+        </p>
+
+        <h2>요약 및 학습 팁</h2>
+        <p>
+          DNS는 <strong>분산·계층형 이름 해석 시스템</strong>으로, 도메인 이름을
+          IP 주소로 변환하고 캐싱을 통해 성능을 최적화합니다.
+        </p>
+        <ul>
+          <li>
+            <strong>학습 팁:</strong> 터미널에서 <code>nslookup</code>이나
+            <code>dig</code> 명령으로 직접 DNS 질의를 해보세요.
+          </li>
+          <li>
+            <strong>추가 참고:</strong> DNS 보안 강화를 위해 <em>DNSSEC</em>이
+            도입되어 위·변조를 방지합니다.
+          </li>
+        </ul>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

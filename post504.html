@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>제어 플레인 방식 (분산형 vs 중앙집중형)</title>
+
+    <!-- ▣ 공통 스타일 시트 (기존 글과 동일) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>제어 플레인 방식 (분산형 vs 논리적으로 중앙집중형)</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>전통적 분산 제어 플레인 (Per-Router Control) 개념</li>
+          <li>논리적 중앙집중형 제어 플레인 (SDN) 개념</li>
+          <li>두 방식의 비교와 트래픽 제어 예시</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="개념-설명">개념 설명</h2>
+        <p>
+          네트워크 <strong>제어 플레인(Control Plane)</strong>은 라우팅 결정과
+          같이 네트워크의 동작을 지휘하는 부분입니다. 이를 구성하는 방식은 크게
+          <strong>전통적인 분산형</strong>과
+          <strong>논리적으로 중앙집중형</strong> 두 가지로 나뉩니다.
+        </p>
+
+        <h3>1. 전통적 분산형(Per-Router) 제어</h3>
+        <p>
+          전통 방식에서는
+          <strong>각 라우터가 자체적으로 라우팅 프로토콜</strong>을 실행하며
+          이웃 라우터와 정보를 교환해 <em>분산적으로</em> 경로를 계산합니다.
+          대표 프로토콜로 OSPF·BGP 등이 있으며, 장점은 높은
+          <em>자율성과 견고함</em>입니다. 어느 한 장비가 고장 나도 전체가
+          마비되지 않고, 다양한 관리 주체가 중앙 조정 없이도 협력할 수 있죠.
+        </p>
+
+        <p>
+          단점은 <strong>글로벌 최적화나 세밀한 정책 반영이 어렵다</strong>는
+          점입니다. 전통 라우팅은 보통 “최단 경로” 위주라 특정 트래픽만
+          우회시키는 <em>정밀 트래픽 엔지니어링</em>이 쉽지 않습니다.
+        </p>
+
+        <h3>2. 논리적 중앙집중형(SDN) 제어</h3>
+        <p>
+          <strong>SDN(Software-Defined Networking)</strong>은 데이터
+          플레인(포워딩)과 제어 플레인을 분리해,
+          <strong>중앙 컨트롤러</strong>가 네트워크 전체를 관리하는 모델입니다.
+          스위치·라우터는 단순히 패킷만 넘기고, 경로 계산·정책 적용은 컨트롤러가
+          소프트웨어로 수행합니다.
+        </p>
+
+        <p>
+          컨트롤러는 전체 토폴로지와 트래픽을 파악하고 있어
+          <strong>전역 최적화</strong>가 가능하며, 운영자는 API(예: OpenFlow)로
+          손쉽게 경로·보안·QoS 정책을 프로그래밍할 수 있습니다. 데이터센터에서는
+          이렇게 얻은 민첩성을 활용해 빠른 리소스 재구성을 실현합니다.
+        </p>
+
+        <h3>3. 트래픽 제어 예시</h3>
+        <p>
+          예를 들어 스위치 S1–S2 링크가 다운되면 SDN 스위치는 즉시 컨트롤러에
+          이벤트를 보고합니다. 컨트롤러는 최신 네트워크 그래프를 사용해
+          <em>새로운 최단 경로를 계산</em>하고, 필요한 스위치들에
+          <em>새 포워딩 규칙</em>을 일괄 배포합니다. 전통 분산형 라우팅보다 훨씬
+          빠르고 일관된 회복이 가능합니다.
+        </p>
+
+        <p>
+          물론 컨트롤러 장애가 걱정될 수 있으나, 실제 구현은 여러 대의
+          컨트롤러를 <em>논리적으로 하나</em>의 집합체로 묶어
+          <strong>고가용성(HA)</strong>을 확보합니다.
+        </p>
+
+        <h2 id="요약-및-학습-팁">요약 및 학습 팁</h2>
+        <ul>
+          <li>
+            <strong>분산형</strong>: 모든 장비가 “똑똑” → 견고하지만 전역
+            최적화·정책 적용 한계
+          </li>
+          <li>
+            <strong>중앙집중형(SDN)</strong>: 컨트롤러가 “똑똑” → 전역 제어
+            용이·프로그래머블, 그러나 컨트롤러 HA 필요
+          </li>
+        </ul>
+
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>
+            왜 오랫동안 인터넷은 분산형 모델을 유지해 왔는지 배경을 정리해 보기
+          </li>
+          <li>SDN 등장 배경(특히 클라우드 데이터센터 요구)을 간단히 조사</li>
+          <li>
+            OpenFlow 메시지 종류(Features, Packet-In, Flow-Mod 등)를 한눈에 정리
+          </li>
+          <li>
+            하이브리드 방식 사례(전통 라우팅 + SDN 제어 덧붙이기)를 찾아보고
+            장단점 비교
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

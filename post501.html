@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>라우팅 프로토콜 개요 (링크 상태·거리 벡터)</title>
+
+    <!-- 🌐 공통 블로그 스타일 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>라우팅 프로토콜 개요 (링크 상태와 거리 벡터)</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>라우팅 프로토콜의 역할과 분류 (정적 vs 동적)</li>
+          <li>링크 상태 라우팅 알고리즘 개념과 예시</li>
+          <li>거리 벡터 라우팅 알고리즘 개념과 예시</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="개념-설명">개념 설명</h2>
+        <p>
+          네트워크에서 <strong>라우팅 프로토콜</strong>은 데이터 패킷이
+          목적지까지 가는 <strong>“좋은” 경로</strong>(최적 경로)를 찾아주는
+          역할을 합니다. 좋은 경로란 일반적으로 <strong>가장 낮은 비용</strong>,
+          <strong>가장 빠른 전송 속도</strong> 또는
+          <strong>가장 혼잡이 적은 경로</strong> 등을 의미합니다. 라우팅
+          프로토콜은 크게 <strong>정적 라우팅</strong>과
+          <strong>동적 라우팅</strong>으로 분류할 수 있습니다.
+          <strong>정적 라우팅</strong>은 관리자가 수동으로 경로를 설정하며 작은
+          규모나 변동이 거의 없는 네트워크에서나 가능하지만 인터넷 같이 큰
+          네트워크에서는 비현실적입니다(변화에 자동 대처가 어렵기 때문). 따라서
+          실제 인터넷에서는 <strong>동적 라우팅 프로토콜</strong>들이
+          사용됩니다.
+        </p>
+
+        <p>
+          동적 라우팅 프로토콜의 핵심에는
+          <strong>두 가지 알고리즘 방식</strong>이 있습니다:
+          <strong>링크 상태(Link State)</strong>와
+          <strong>거리 벡터(Distance Vector)</strong> 방식.
+        </p>
+
+        <p>
+          <strong>링크 상태 라우팅(Link State)</strong> 알고리즘에서는
+          <strong>모든 라우터가 네트워크 전체 토폴로지</strong>와
+          <strong>각 링크의 상태/비용 정보를 파악</strong>하고 있습니다. 각
+          라우터는 이러한 <strong>전역 정보</strong>를 활용하여
+          <strong>모든 목적지까지의 최단 경로</strong>를 스스로 계산하고, 그
+          결과로 자신의 라우팅 테이블을 구성합니다. 대표 프로토콜:
+          <strong>OSPF, IS-IS</strong>. 예를 들면, A–B–C 세 라우터가 있을 때 각
+          라우터는 <em>LSA</em>를 홍수(l$s flooding$) 방식으로 배포하고,
+          <strong>다익스트라 알고리즘</strong>을 통해 A→C의 최단 경로(A-B-C
+          등)를 계산합니다.
+        </p>
+
+        <p>
+          <strong>거리 벡터 라우팅(Distance Vector)</strong> 알고리즘에서는
+          라우터들이
+          <strong>인접한 이웃들과 거리/경로 정보를 주고받으면서</strong>
+          점진적으로 최적 경로를 찾아갑니다. 각 라우터는
+          <strong>직접 연결된 이웃</strong>과 목적지까지의
+          <strong>거리(코스트)</strong>만 알고 시작하며, 주기적으로 이웃들끼리
+          <strong>자신이 계산한 최단 거리 벡터</strong>를 교환합니다. 받은
+          정보를 토대로 라우팅 정보를 갱신하고, 새로운 최단 경로가 발견되면 다시
+          이웃에게 알리는 식으로
+          <strong>반복적</strong>·<strong>분산적</strong>으로 동작합니다. 대표
+          프로토콜: <strong>RIP</strong>. 예를 들어 A–B–C 선형 구조에서 A가 C로
+          가는 경로를 모를 때, B가 “C까지 1홉”이라 광고하면 A는 자신→B(1) +
+          B→C(1) = 2홉으로 갱신합니다.
+        </p>
+
+        <p><strong>장·단점 비교</strong></p>
+        <ul>
+          <li>
+            <strong>링크 상태</strong>
+            <ul>
+              <li>
+                전역 정보 기반, 초기 LSA 홍수 트래픽은 많지만
+                <strong>빠른 수렴</strong>
+              </li>
+              <li>
+                링크별 비용·품질을 <strong>정밀 반영</strong> → 최적 경로 선정
+                우수
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>거리 벡터</strong>
+            <ul>
+              <li>구현이 단순, 소규모 네트워크 적합</li>
+              <li>
+                대규모에서 <strong>수렴이 느리고</strong>
+                <em>count-to-infinity</em> 루프 문제 가능 → Poisoned Reverse 등
+                완화 기법 필요
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <h2 id="요약-및-학습-팁">요약 및 학습 팁</h2>
+        <ul>
+          <li>
+            <strong>링크 상태</strong> = 전역 토폴로지 + 다익스트라 → 빠른 수렴,
+            정밀 비용
+          </li>
+          <li>
+            <strong>거리 벡터</strong> = 이웃 벡터 교환 + 벨만-포드 → 단순하지만
+            루프 주의
+          </li>
+        </ul>
+
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>
+            작은 토폴로지(5노드 정도)에 직접 다익스트라·벨만-포드 계산 실습
+          </li>
+          <li>RIP와 OSPF 패킷 캡처(Wireshark)로 업데이트 메시지 형식 관찰</li>
+          <li>
+            Count-to-Infinity 시나리오를 도식화하고 Poisoned Reverse 효과 확인
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

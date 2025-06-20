@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>무선 링크의 특성과 CDMA</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>무선 링크의 특성과 CDMA</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>무선 링크의 물리적 특성 (경로 손실, 간섭 등)</li>
+          <li>신호 대 잡음비 (SNR)와 비트 오류율 (BER) 관계</li>
+          <li>무선 전송률의 동적 조정 (링크 적응)</li>
+          <li>다중 접속의 필요성과 CDMA 개념</li>
+        </ul>
+
+        <h2 id="물리적-특성">무선 링크의 물리적 특성</h2>
+        <p>
+          무선 링크는 신호 감쇠, 간섭, 다중 경로 전파로 인해 통신 품질이
+          저하되기 쉽습니다. 신호는 거리와 장애물로 약해지고, 같은 주파수를
+          공유하는 다른 기기의 간섭, 반사와 굴절에 의한 다중 경로로 왜곡이
+          발생합니다. 이러한 특성은 오류율을 높이고, 강력한 오류 처리 기법을
+          필요로 합니다.
+        </p>
+
+        <h2 id="snr-ber">신호 대 잡음비 (SNR)와 비트 오류율 (BER) 관계</h2>
+        <p>
+          SNR은 신호 세기 대비 잡음 세기 비율을 의미하며, SNR이 높을수록 BER은
+          낮아집니다. SNR이 낮으면 수신기는 데이터와 잡음을 구분하기 어렵고,
+          오류가 증가합니다. 따라서 통신 시스템은 SNR을 높여 BER을 줄이거나,
+          오류 정정 기법을 추가하여 품질을 보장합니다.
+        </p>
+
+        <h2 id="링크-적응">무선 전송률의 동적 조정 (링크 적응)</h2>
+        <p>
+          무선 환경 변화에 따라 Wi-Fi, LTE 등은 실시간으로 전송률과 변조 방식을
+          조절합니다. 신호가 약하면 단순 변조와 낮은 속도로, 강하면 복잡 변조와
+          높은 속도로 바꾸어 효율과 안정성을 균형 있게 유지합니다. 이를 링크
+          적응이라 부르며, 사용자 경험과 무선 품질을 최적화합니다.
+        </p>
+
+        <h2 id="cdma">다중 접속의 필요성과 CDMA 개념</h2>
+        <p>
+          여러 사용자가 충돌 없이 통신하려면 다중 접속 기법이 필요합니다. CDMA는
+          모든 사용자가 같은 시간과 주파수 자원을 공유하되, 고유한 코드로 신호를
+          구분하는 방식입니다. 수신기는 자신에게 할당된 코드로 데이터를
+          복원합니다. CDMA는 동시 접속 용량을 높이며, 3G 이동통신의 핵심 기술로
+          쓰였습니다.
+        </p>
+
+        <h2 id="요약-팁">요약 및 학습 팁</h2>
+        <p>
+          <strong>요약:</strong> 무선 링크는 다양한 물리적 제약으로 품질 저하가
+          쉬우며, SNR과 BER 간 관계가 품질을 좌우합니다. 링크 적응과 CDMA는
+          이러한 제약을 극복하고 다중 사용자 접속을 가능케 하는 핵심 기술입니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> Wi-Fi 감쇠, SNR 변화 관찰, CDMA 언어 비유를
+          기억하세요. 공식보다 개념 위주로 SNR-BER 관계와 CDMA 동작 원리를
+          이해하면 도움이 됩니다.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

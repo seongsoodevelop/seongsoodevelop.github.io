@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>비디오 스트리밍 및 CDN</title>
+
+    <!-- 📺 블로그 공통 스타일 유지 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --color-bg: #f9f9fb;
+        --color-surface: #ffffff;
+        --color-primary: #2c5282;
+        --color-primary-dark: #2b6cb0;
+        --color-text: #1a202c;
+        --color-text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--color-primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 0%,
+          var(--color-primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--color-primary);
+      }
+      .post-content {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3,
+      .post-content h4 {
+        color: var(--color-primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      pre {
+        background: #f1f5f9;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--color-text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>비디오 스트리밍 및 CDN</h2>
+      </header>
+
+      <article class="post-content">
+        <h2>목차</h2>
+        <ul>
+          <li>인터넷 비디오 스트리밍 개요</li>
+          <li>적응형 스트리밍 (DASH)의 원리</li>
+          <li>콘텐츠 전송 네트워크(CDN)의 개념</li>
+          <li>CDN의 동작 방식과 사례</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2>인터넷 비디오 스트리밍 개요</h2>
+        <p>
+          인터넷을 통한 <strong>비디오 스트리밍</strong>은 사용자가 동영상을
+          다운로드 완료 후 시청하는 것이 아니라,
+          <strong>다운로드하면서 실시간으로 재생</strong>하는 기술을 의미합니다.
+          유튜브, 넷플릭스 등의 서비스가 대표적인 예로, 사용자는 재생 시작을
+          누르면 몇 초 내로 영상이 나오기 시작하고, 백그라운드에서는 계속
+          데이터가 전송됩니다. 스트리밍을 위해서는
+          <strong>일정 수준 이상의 지속적인 대역폭</strong>이 필요하며, 데이터
+          전송 지연이나 끊김 없이 <strong>연속 재생</strong>이 보장되어야
+          합니다. 이를 위해 플레이어는 보통 수 초 분량의 데이터를
+          <strong>버퍼(재생버퍼)</strong>에 미리 받아 놓고, 네트워크 상태가
+          일시적으로 불안정해도 버퍼에 저장된 내용을 재생하여
+          <strong>끊김을 완화</strong>합니다. 인터넷 비디오 스트리밍의 도전
+          과제로는 <strong>대용량 데이터 전송</strong>(고화질 영상은 수
+          기가바이트에 달함), <strong>네트워크 품질 편차</strong>(사용자마다
+          가용한 인터넷 속도가 다름), <strong>지연 시간</strong>(라이브
+          스트리밍의 경우 최소한의 지연이 중요) 등이 있습니다. 이러한 문제들을
+          해결하고자 현대 스트리밍 시스템에서는
+          <strong>적응형 스트리밍 기법</strong>과
+          <strong>콘텐츠 전송 네트워크(CDN)</strong>를 광범위하게 활용하고
+          있습니다.
+        </p>
+
+        <h2>적응형 스트리밍 (DASH)의 원리</h2>
+        <p>
+          <strong>DASH(Dynamic Adaptive Streaming over HTTP)</strong>는 이름
+          그대로 HTTP 기반으로 동영상 품질을
+          <strong>동적으로 적응</strong>시키는 스트리밍 기술입니다. 기본
+          아이디어는 하나의 동영상을 여러 가지
+          <strong>화질/비트레이트 버전</strong>으로 인코딩하고 잘게
+          <strong>세그먼트(조각)</strong>로 나눈다는 것입니다. 예를 들어
+          1시간짜리 영상을 10초씩 끊어진 360개의 세그먼트로 만들고, 같은 영상을
+          240p, 480p, 720p, 1080p 등 다양한 화질로 준비합니다.
+        </p>
+        <p>
+          사용자의 재생 장치는 먼저 동영상의 메타정보가 담긴
+          <strong>매니페스트(manifest)</strong> 파일을 다운로드 받아 어떤 URL에
+          어떤 화질별 세그먼트들이 있는지 파악합니다. 재생이 시작되면 초기에는
+          비교적 낮은 화질로 세그먼트 몇 개를 받아와 버퍼를 채워 재생을
+          시작합니다. 이후 <strong>네트워크 상황을 모니터링</strong>하면서,
+          다운로드 속도가 높고 버퍼가 충분하면 더 고화질(비트레이트 높은)
+          세그먼트를 요청하고, 반대로 네트워크가 느려지면 화질을 떨어뜨려 작은
+          용량 세그먼트를 받습니다. 이런 식으로 매 수 초마다 다음에 받을
+          세그먼트의 화질을 조절함으로써, 사용자는
+          <strong>끊김 없이 최적의 화질</strong>로 영상을 볼 수 있게 됩니다.
+        </p>
+
+        <h2>콘텐츠 전송 네트워크(CDN)의 개념</h2>
+        <p>
+          <strong>콘텐츠 전송 네트워크(CDN)</strong>는 대규모 사용자에게
+          콘텐츠(특히 정적 파일: 동영상, 이미지, 파일 등)를 효율적으로 전달하기
+          위해 전 세계에 분산된 <strong>서버 네트워크</strong>를 활용하는
+          인프라입니다. 간단히 말해,
+          <strong>사용자와 지리적으로 가까운 위치</strong>에 콘텐츠 사본을
+          저장해 두고 사용자 요청을 근처에서 처리함으로써, 전송 거리를 줄이고
+          지연을 감소시키는 방식입니다.
+        </p>
+
+        <h2>CDN의 동작 방식과 사례</h2>
+        <p>
+          CDN을 통해 사용자의 콘텐츠 요청이 근처 서버로 유도되는 방법에는 여러
+          가지가 있습니다. 대표적인 방식은
+          <strong>DNS 리다이렉션</strong>입니다. 사용자가
+          <code>video.example.com</code>에 요청을 보내면, DNS 질의 단계에서
+          CDN이 운영하는 DNS 서버가 사용자의 IP 주소를 참고하여 가장 가까운 CDN
+          엣지(edge) 서버의 IP를 반환합니다. 그래서 실질적인 HTTP 요청은 원본
+          서버가 아닌, 사용자의 지역에 있는 CDN 서버로 향하게 됩니다.
+        </p>
+        <p>
+          CDN 서버는 해당 콘텐츠를 이미 캐시하고 있다면 곧바로 전달하고(캐시
+          히트), 없다면 원본 서버로부터 콘텐츠를 가져와 사용자에게 전송함과
+          동시에 자체 저장해 둡니다(캐시 미스). 이 과정을 통해 동일 콘텐츠에
+          대한 이후의 요청들은 원본이 아닌 CDN 캐시에서 바로 제공됩니다. CDN은
+          오늘날 웹 트래픽의 상당 부분을 처리하고 있으며, 특히 비디오 스트리밍
+          서비스에 필수적입니다.
+        </p>
+        <p>
+          <strong>넷플릭스(Netflix)</strong>는 자체 CDN인
+          <em>Open Connect</em>를 구축하여 전 세계 ISP 망 내에 캐시 서버를
+          배치하고, 인기 콘텐츠를 미리 저장해 두었다가 지역 사용자들에게
+          공급합니다. <strong>유튜브</strong> 역시 구글의 글로벌 데이터 센터와
+          캐시 인프라를 통해 사용자와 가까운 곳에서 동영상을 전송합니다.
+        </p>
+
+        <h2>요약 및 학습 팁</h2>
+        <p>
+          이번 글에서는 비디오 스트리밍의 개념과 이를 효율화하는 적응형
+          스트리밍(DASH) 기술과 콘텐츠 전송 네트워크(CDN)에 대해 살펴보았습니다.
+        </p>
+        <ul>
+          <li>
+            <strong>학습 팁:</strong> 유튜브나 넷플릭스 영상 재생 중
+            <em>개발자 도구 Network 탭</em> 또는 스트림 통계(유튜브: 우클릭 →
+            통계 정보)를 통해 실제 화질 변화와 서버 위치를 관찰해 보세요.
+          </li>
+          <li>
+            <strong>추가 참고:</strong> CDN은 <em>DDoS 방어</em>,
+            <em>SSL 오프로드</em>, <em>엣지 컴퓨팅</em> 등 부가 기능을
+            제공합니다.
+          </li>
+        </ul>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

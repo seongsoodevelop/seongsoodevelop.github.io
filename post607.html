@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>링크 계층 주소와 ARP</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>링크 계층 주소와 ARP</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>링크 계층 주소 vs 네트워크 계층 주소</li>
+          <li>ARP 프로토콜의 필요성</li>
+          <li>동일 네트워크에서의 ARP 동작</li>
+          <li>다른 네트워크 간 통신 시 ARP (게이트웨이의 역할)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="링크-vs-네트워크">링크 계층 주소 vs 네트워크 계층 주소</h2>
+        <p>
+          인터넷에서 <strong>호스트를 식별하는 주소</strong>에는 두 가지가
+          있습니다: <strong>IP 주소</strong>와 <strong>MAC 주소</strong>. IP
+          주소는 인터넷 규모에서 <strong>논리적 위치</strong>를 나타내며 계층적
+          <strong>가상 주소</strong>이고, MAC 주소는
+          <strong>랜 카드에 부여된 물리적 식별자</strong>로 LAN 내부에서 장치를
+          구분하는 <strong>하드웨어 주소</strong>입니다.
+        </p>
+
+        <h2 id="arp-필요성">ARP 프로토콜의 필요성</h2>
+        <p>
+          <strong>ARP(Address Resolution Protocol)</strong>은 IP 주소를 MAC
+          주소로 매핑해주는 프로토콜입니다. 각 홉 사이 프레임 전송에는 MAC
+          주소가 필요하므로, ARP가 IP와 MAC 간 연결을 자동화하여 통신을 가능하게
+          합니다.
+        </p>
+
+        <h2 id="arp-동작">동일 네트워크에서의 ARP 동작</h2>
+        <p>
+          A가 B의 MAC을 모르면 ARP 요청을 브로드캐스트하여 B의 MAC을 알아내고,
+          B는 응답을 유니캐스트로 돌려줍니다. A는 이를 ARP 캐시에 저장하고 이후
+          바로 MAC으로 프레임을 전송합니다.
+        </p>
+
+        <h2 id="다른-네트워크-arp">
+          다른 네트워크 간 통신 시 ARP (게이트웨이의 역할)
+        </h2>
+        <p>
+          다른 네트워크와 통신 시 A는 게이트웨이의 MAC을 ARP로 알아내고, 프레임
+          목적지를 게이트웨이 MAC으로 하여 라우터로 전달합니다. 이후 각 홉마다
+          ARP로 MAC을 알아내며 최종 목적지로 전달됩니다.
+        </p>
+
+        <h2 id="요약-팁">요약 및 학습 팁</h2>
+        <p>
+          <strong>요약:</strong> ARP는 IP와 MAC을 매핑하여 로컬 통신을 가능하게
+          하며, 요청은 브로드캐스트, 응답은 유니캐스트로 동작합니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> Wireshark로 ARP 패킷을 관찰하고 `arp -a` 명령으로
+          캐시를 확인해 보세요. ARP 스푸핑과 같은 보안 이슈도 알아두면 좋습니다.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

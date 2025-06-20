@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IPsec를 통한 네트워크 계층 보안</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>IPsec를 통한 네트워크 계층 보안</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>IPsec의 기능과 활용</li>
+          <li>전송 모드와 터널 모드</li>
+          <li>AH와 ESP 프로토콜</li>
+        </ul>
+
+        <p>
+          이번 글에서는 <strong>IPsec</strong>을 활용한 네트워크 계층의 보안에
+          대해 정리합니다. IPsec(IP Security)은 IP 계층에서 동작하는 보안
+          프로토콜 모음으로, <strong>VPN</strong>(Virtual Private Network)
+          구현에 핵심적으로 사용됩니다. IPsec의 장점은 응용 프로그램을 수정하지
+          않아도 IP 레벨에서 <strong>투명하게 보안 기능을 제공</strong>한다는
+          것입니다. 즉, IPsec 설정만으로 마치 전용선망을 구축한 것처럼 공중
+          인터넷을 안전한 통신 경로로 활용할 수 있습니다.
+        </p>
+
+        <h2 id="기능">IPsec의 기능과 활용</h2>
+        <p>
+          IPsec은 네트워크 계층에서 종단 간(IP 주소 간) 패킷 단위로 동작하여,
+          <strong>데이터 기밀성, 무결성, 출처 인증, 재생 공격 방지</strong> 등의
+          보안 서비스를 제공합니다. 이를 통해 웹 페이지, 이메일, 파일 전송, TCP
+          핸드셰이크, DNS 쿼리까지 <strong>일괄적으로 보호</strong>할 수
+          있습니다.
+        </p>
+        <p>
+          일반적으로 기업에서는 본사와 지사 간, 재택 근무자와 본사 간 IPsec VPN
+          터널을 구축하여 공중망에서도 사설망 수준의 보안을 확보합니다.
+        </p>
+
+        <h2 id="모드">전송 모드와 터널 모드</h2>
+        <p>
+          IPsec은 <strong>전송 모드</strong>와 <strong>터널 모드</strong> 두
+          가지 동작 모드를 제공합니다.
+        </p>
+        <ul>
+          <li>
+            <strong>전송 모드</strong>: IP 패킷의 페이로드만 암호화/인증하며, IP
+            헤더는 그대로 전송됩니다. 호스트-호스트 통신에서 주로 사용됩니다.
+          </li>
+          <li>
+            <strong>터널 모드</strong>: IP 패킷 전체를 암호화하고 새 IP 헤더를
+            붙입니다. VPN 구축에 주로 사용되며 경로 정보도 숨깁니다.
+          </li>
+        </ul>
+        <p>
+          터널 모드에서는 본사-지사 라우터 사이에 IPsec 터널이 형성되어 내부망
+          트래픽이 암호화됩니다.
+        </p>
+
+        <h2 id="프로토콜">AH와 ESP 프로토콜</h2>
+        <p>
+          IPsec은 <strong>AH</strong>(Authentication Header)와
+          <strong>ESP</strong>(Encapsulating Security Payload) 두 가지
+          프로토콜로 구성됩니다.
+        </p>
+        <ul>
+          <li>
+            <strong>AH</strong>: 출처 인증과 무결성을 제공하지만 암호화는
+            제공하지 않습니다.
+          </li>
+          <li>
+            <strong>ESP</strong>: 출처 인증, 무결성, 암호화를 모두 제공하며,
+            실제 VPN 등에서는 ESP가 주로 사용됩니다.
+          </li>
+        </ul>
+        <p>AH와 ESP는 전송 모드와 터널 모드 모두에서 사용될 수 있습니다.</p>
+
+        <p>
+          <strong>요약:</strong> IPsec은 IP 계층에서 데이터그램 단위로 보안을
+          제공하며, VPN 등에서 주로 터널 모드 ESP로 활용됩니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> IPsec 테스트베드를 구축해보거나 Wireshark로 ESP
+          헤더와 암호화된 페이로드를 관찰해보세요. 실습을 통해 IPsec의 동작을 더
+          명확히 이해할 수 있습니다.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>연결형 전송 – TCP의 구조와 연결 설정</title>
+
+    <!-- Google Webfont & 기본 스타일  --------------------------------------->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.06);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        font-family: "Pretendard", sans-serif;
+        color: var(--text);
+        line-height: 1.7;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.3rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.6rem;
+        font-size: 0.9rem;
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.6rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+        margin-top: 2rem;
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1.2rem 1.2rem;
+      }
+      .post-content li {
+        margin: 0.35rem 0;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 0.94em;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.6rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo">
+        <a href="index.html" style="color: #fff; text-decoration: none"
+          >김성수의 블로그</a
+        >
+      </h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>연결형 전송: TCP의 구조와 연결 설정</h2>
+      </header>
+
+      <article class="post-content" id="article">
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li><a href="#tcp-feature">TCP의 특징</a></li>
+          <li><a href="#tcp-header">TCP 세그먼트 구조</a></li>
+          <li><a href="#handshake">TCP의 연결 설정(3-way handshake)</a></li>
+        </ul>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="tcp-feature">TCP의 특징</h2>
+        <p>
+          <strong>TCP (Transmission Control Protocol)</strong>은
+          <strong>연결형 전송(connection-oriented)</strong> 프로토콜이다.
+          데이터를 보내기 전 <em>3-way 핸드셰이크</em>를 통해 양 끝단이 논리적
+          연결을 맺고 초기 순번 등을 교환한다. 이 추가 왕복 지연 덕분에 TCP는
+          <strong>신뢰적 전달·순서 제어·흐름 제어·혼잡 제어</strong>를 포함한
+          “인터넷 표준 신뢰성 프로토콜” 역할을 수행한다.
+        </p>
+
+        <p>
+          TCP는 <em>전이중 (full-duplex)</em> 바이트 스트림 서비스를 제공한다.
+          즉 한 연결 위에서 양 방향으로 동시에 데이터를 주고받을 수 있으며, 응용
+          계층에는 패킷 경계가 보이지 않고 연속된 바이트 흐름으로 전달된다. 이런
+          특성 덕분에 <strong>HTTP, FTP, SMTP, SSH</strong> 등 대부분의 중요
+          애플리케이션이 TCP를 기본 전송 계층으로 채택한다.
+        </p>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="tcp-header">TCP 세그먼트 구조</h2>
+        <p>
+          TCP 세그먼트는 <em>헤더 + 데이터</em>로 구성되며, 헤더는 최소
+          20바이트다. 주요 필드는 다음과 같다.
+        </p>
+
+        <ul>
+          <li><strong>출발지/목적지 포트 번호</strong> (16 bit ×2)</li>
+          <li>
+            <strong>순서 번호 (Sequence Number)</strong> – 세그먼트 첫 바이트의
+            번호
+          </li>
+          <li>
+            <strong>확인 응답 번호 (Ack Number)</strong> –
+            <em>다음으로 기대</em>하는 바이트 번호
+          </li>
+          <li>
+            <strong
+              >헤더 길이(오프셋) + 예약 + 플래그(SYN, ACK, FIN, RST…)</strong
+            >
+          </li>
+          <li><strong>윈도우 크기</strong> – 수신 버퍼 여유(흐름 제어)</li>
+          <li><strong>체크섬</strong> – 헤더·데이터 오류 검출</li>
+          <li>
+            <strong>긴급 포인터</strong> + <strong>옵션</strong>(MSS, 윈도우
+            확장, SACK Permitted 등)
+          </li>
+        </ul>
+
+        <p>
+          포트 번호는 프로세스 식별(다중화/역다중화)에, 순서·ACK 번호는
+          <em>신뢰적·순서</em> 전달에, 윈도우는 <em>흐름 제어</em>에, 플래그는
+          <em>연결/종료·제어</em> 동작에 활용된다. TCP 헤더를 해독할 줄 알면
+          패킷 캡처 분석이나 트러블슈팅 때 큰 도움이 된다.
+        </p>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="handshake">TCP의 연결 설정 (3-way 핸드셰이크)</h2>
+
+        <ol>
+          <li>
+            <strong>클라이언트 → 서버 : SYN</strong><br />
+            초기 순번 ISN (x) 선택 → <code>SYN=1, Seq=x</code>
+          </li>
+          <li>
+            <strong>서버 → 클라이언트 : SYN + ACK</strong><br />
+            서버 ISN (y) 선택, 클라이언트 SYN에 대한 확인<br />
+            <code>SYN=1, ACK=1, Seq=y, Ack=x+1</code>
+          </li>
+          <li>
+            <strong>클라이언트 → 서버 : ACK</strong><br />
+            서버 SYN에 대한 확인<br />
+            <code>ACK=1, Seq=x+1, Ack=y+1</code>
+          </li>
+        </ol>
+
+        <p>
+          세 번째 ACK가 도착하면 양측 모두 상대의 ISN을 인정하고
+          <strong>ESTABLISHED</strong> 상태로 전이, 본격적인 데이터 교환이
+          시작된다. 패킷이 손실되면 타임아웃‧재전송으로 연결 수립을 보장한다.
+        </p>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="정리">요약</h2>
+        <ul>
+          <li>
+            TCP는 <strong>연결형·신뢰성·전이중·바이트 스트림</strong> 지원.
+          </li>
+          <li>
+            복합 헤더 필드(순서·ACK 번호, 윈도우, 플래그 등)를 통해 오류
+            복구·흐름 제어·혼잡 제어를 구현.
+          </li>
+          <li>
+            3-way handshake : SYN → SYN+ACK → ACK (초기 순번 교환 + 연결
+            동기화).
+          </li>
+        </ul>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <h2 id="학습팁">학습 팁</h2>
+        <ol>
+          <li>
+            <code>Wireshark</code>로 실제 SYN / SYN+ACK / ACK 패킷을 캡처해
+            순서·ACK 번호 필드를 확인해 보세요.
+          </li>
+          <li>
+            TCP 헤더 필드를 16·32 비트 그리드로 직접 써보고 각 필드 설명을
+            메모하면 구조가 기억에 오래 남습니다.
+          </li>
+          <li>
+            <code>netstat -an</code> 또는 <code>ss -tn</code>로
+            LISTEN·ESTABLISHED·TIME_WAIT 등 TCP 상태를 확인해 보세요.
+            핸드셰이크·종료 과정과 상태 머신을 연결 지어 이해할 수 있습니다.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

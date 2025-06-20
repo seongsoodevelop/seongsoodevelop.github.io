@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>신뢰성 있는 전송과 rdt 프로토콜(rdt1.0 ~ rdt3.0)</title>
+
+    <!-- ▣ 공통 스타일 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>신뢰성 있는 전송과 rdt 프로토콜 (rdt1.0 ~ rdt3.0)</h2>
+      </header>
+
+      <article class="post-content">
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>신뢰성 있는 전송의 원리</li>
+          <li>rdt 1.0</li>
+          <li>rdt 2.0</li>
+          <li>rdt 2.1 및 rdt 2.2</li>
+          <li>rdt 3.0</li>
+        </ul>
+
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="신뢰성-있는-전송의-원리">신뢰성 있는 전송의 원리</h2>
+        <p>
+          네트워크에서는 패킷 손실·비트 오류가 발생할 수 있으므로
+          <strong>ARQ(Automatic Repeat reQuest)</strong> 기법을 이용해 신뢰성을
+          보장한다. ARQ의 세 기둥은 <strong>오류 검출</strong>,
+          <strong>ACK/NAK 피드백</strong>,
+          <strong>재전송(타임아웃 포함)</strong>이다. 송신자는 패킷을 보내고,
+          수신자로부터 <em>ACK</em>이 오면 다음 패킷으로 넘어가며,
+          <em>NAK</em>이 오거나 일정 시간 내 ACK가 없으면 해당 패킷을 다시
+          전송한다.
+        </p>
+
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="rdt1">rdt 1.0</h2>
+        <p>
+          <strong>rdt 1.0</strong>은 “<em>완벽한 채널</em>”을 전제로 한
+          베이스라인 프로토콜이다. 오류·손실이 없다고 가정하므로 송신자는 상위
+          계층으로부터 받은 데이터를 바로 전송하고, 수신자는 그대로 상위
+          계층으로 넘기면 끝이다. 추가 헤더, ACK/NAK, 타이머 등
+          <em>어떠한 제어 기능도 없다</em>.
+        </p>
+
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="rdt2">rdt 2.0</h2>
+        <p>
+          <strong>rdt 2.0</strong>은
+          <em>비트 오류는 있지만 손실은 없는 채널</em>을 가정한다. 송신자는
+          <strong>체크섬</strong>을 붙여 보내고, 수신자는 오류가 없으면
+          <code>ACK</code>, 오류가 있으면 <code>NAK</code>을 돌려준다. 송신자는
+          NAK이 오면 같은 패킷을 재전송한다. 단,
+          <em>피드백(ACK/NAK) 자체가 손상될 가능성</em>은 아직 처리하지 못한다.
+        </p>
+
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="rdt21-22">rdt 2.1 &amp; rdt 2.2</h2>
+        <p>
+          <strong>rdt 2.1</strong>은 <strong>순서 번호(0/1)</strong>를 도입해
+          <em>ACK/NAK 손상</em>과 <em>중복 패킷</em> 문제를 해결한다. 수신자는
+          순서 번호를 보고 이미 처리한 패킷인지 판별하고, ACK·NAK에도 해당
+          순번을 적어 돌려준다.
+        </p>
+        <p>
+          <strong>rdt 2.2</strong>는 NAK을 없애고 <em>중복 ACK</em>만으로 부정
+          응답을 표현한다. 수신 오류가 발생하면 “마지막으로 정상 수신한 패킷의
+          ACK”를 한번 더 전송해 송신자에게 재전송을 유도한다.
+        </p>
+
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="rdt3">rdt 3.0</h2>
+        <p>
+          <strong>rdt 3.0</strong>은 <em>패킷 손실까지 존재</em>하는 실세계를
+          가정한다. 송신자는 패킷마다 <strong>타이머</strong>를 걸어 두고,
+          타임아웃 시 재전송한다. 순서 번호 덕분에 수신자는 중복 패킷을 구별해
+          폐기할 수 있다. 결과적으로 <em>Stop-and-Wait ARQ</em>가 완성되지만, 한
+          번에 한 패킷만 보내므로 <strong>채널 활용률이 낮다</strong>는 단점이
+          있다. 이를 개선하기 위해 이후엔
+          <em>파이프라이닝(슬라이딩 윈도우)</em> 기법이 도입된다.
+        </p>
+
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="정리">정리</h2>
+        <ul>
+          <li><strong>rdt 1.0</strong> : 오류·손실 모두 없음 → 제어 필요 無</li>
+          <li><strong>rdt 2.0</strong> : 비트 오류만 → 체크섬 + ACK/NAK</li>
+          <li>
+            <strong>rdt 2.1</strong> : ACK/NAK 손상 대응 → <em>순서 번호</em>
+          </li>
+          <li>
+            <strong>rdt 2.2</strong> : <em>NAK 제거</em>, 중복 ACK으로 부정 응답
+          </li>
+          <li>
+            <strong>rdt 3.0</strong> : 손실 대응 → <em>타임아웃 재전송</em>,
+            Stop-and-Wait ARQ, 그러나 성능↓
+          </li>
+        </ul>
+
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="학습팁">학습 팁</h2>
+        <ol>
+          <li>
+            각 버전에 대해 <strong>송·수신 FSM</strong>을 직접 그려보세요.
+          </li>
+          <li>
+            작은 시나리오(패킷 손상·ACK 손실 등)를 설정해 종이에 이벤트 흐름을
+            따라가며 이해해 보세요.
+          </li>
+          <li>
+            Stop-and-Wait의 비효율성을 느끼려면
+            <em>한 글자 전송 후 확인 → 다음 글자</em>와
+            <em>여러 글자 한꺼번에 보내기</em>를 메신저로 실험해 보세요.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

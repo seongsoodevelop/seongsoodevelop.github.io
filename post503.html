@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ISP 간 라우팅: BGP</title>
+
+    <!-- ▣ 공통 스타일 (OSPF 글과 동일) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>ISP 간 라우팅: BGP</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>BGP 개요 및 역할 (인터넷의 경계 게이트웨이 프로토콜)</li>
+          <li>BGP 동작 원리 (eBGP와 iBGP, 경로 벡터 방식)</li>
+          <li>BGP의 경로 속성과 정책 (AS-PATH, NEXT-HOP, 수렴 예시)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="개념-설명">개념 설명</h2>
+        <p>
+          전 세계 인터넷을 하나로 묶는
+          <strong>경계 게이트웨이 프로토콜(Border Gateway Protocol, BGP)</strong
+          >은 사실상의 <em>인터넷 표준 인터-도메인 라우팅 프로토콜</em>입니다.
+          종종 “인터넷의 풀을 붙잡아 주는 접착제”로 불릴 만큼, 서로 다른
+          <strong>자율시스템(AS)</strong> 간에 경로를 교환하고 최적 경로를
+          선택하는 핵심 역할을 합니다.
+        </p>
+
+        <p>BGP 세션 유형은 두 가지입니다.</p>
+        <ul>
+          <li>
+            <strong>eBGP (External BGP)</strong> : 다른 AS 경계 라우터끼리 맺는
+            외부 세션
+          </li>
+          <li>
+            <strong>iBGP (Internal BGP)</strong> : 같은 AS 내부 라우터끼리 맺는
+            내부 세션
+          </li>
+        </ul>
+        <p>
+          예컨대 ISP A와 ISP B 사이 경계 라우터가 eBGP로 경로를 교환하면, ISP A
+          내부의 나머지 라우터는 iBGP로 그 경로를 전달받습니다. 이렇게 BGP는
+          “<strong>우리 AS에 이 프리픽스(목적지)가 있다</strong>”를 광고하며 전
+          세계 AS가 상호 연결된 경로 망을 형성합니다.
+        </p>
+
+        <h3 id="경로-벡터-및-속성">경로 벡터 및 속성</h3>
+        <p>
+          BGP는 <strong>경로 벡터(Path-Vector)</strong> 방식입니다. 경로를
+          광고할 때 다양한 <strong>Path Attribute</strong>를 함께 싣는데, 핵심
+          속성은 다음과 같습니다.
+        </p>
+        <ul>
+          <li>
+            <strong>AS-PATH</strong> : 그 경로가 거쳐 온 AS 번호 목록 (루프
+            방지·경로 선택)
+          </li>
+          <li><strong>NEXT-HOP</strong> : 다음 홉(이웃 AS 라우터)의 IP</li>
+        </ul>
+        <p>
+          경계 라우터는 여러 후보 경로를 받으면
+          <strong
+            >로컬 정책(Local Pref, MED, 커뮤니티 등)과 AS-PATH 길이</strong
+          >
+          등을 비교해 하나를 “<em>베스트 경로</em>”로 선택하고, 필요에 따라 일부
+          경로는 이웃에 <em>광고하지 않을</em> 수도 있습니다. 따라서 BGP는 단순
+          최단거리보다는 사업자 정책·비용 모델이 크게 반영되는
+          <strong>정책 기반 라우팅</strong>이라 불립니다.
+        </p>
+
+        <h3 id="bgp-메시지-교환">BGP 메시지 교환</h3>
+        <p>
+          BGP는 <strong>TCP 포트 179</strong> 위에서 작동하여 신뢰성 있는 전송을
+          확보합니다. 주된 메시지 유형은 다음과 같습니다.
+        </p>
+        <ul>
+          <li><strong>OPEN</strong> : 세션 성립 시 초기 인사·협상</li>
+          <li><strong>KEEPALIVE</strong> : 주기적 헬스 체크</li>
+          <li><strong>UPDATE</strong> : 새로운 경로 광고 또는 철회</li>
+          <li><strong>NOTIFICATION</strong> : 오류 발생 시 세션 종료 통보</li>
+        </ul>
+        <p>
+          eBGP로 받아온 베스트 경로는 iBGP와 내부 IGP(OSPF 등)를 통해 AS 전체에
+          전파되어, 최종적으로 각 라우터의 포워딩 테이블이 완성됩니다.
+        </p>
+
+        <h2 id="요약-및-학습-팁">요약 및 학습 팁</h2>
+        <ul>
+          <li>
+            BGP는 ISP(AS) 간의 <strong>유일한 표준 경계 라우팅 프로토콜</strong>
+          </li>
+          <li>eBGP·iBGP 두 계층으로 외부/내부 전파</li>
+          <li>
+            <strong>AS-PATH, NEXT-HOP, Local Pref</strong> 등 속성 기반의
+            <em>정책적 경로 선택</em>
+          </li>
+          <li>TCP 179 위에서 OPEN / UPDATE / KEEPALIVE / NOTIFICATION 교환</li>
+        </ul>
+
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>
+            3-4개의 AS가 연결된 토폴로지를 그려, 각 AS가 서로 어떤 경로를
+            광고·선택하는지 시뮬레이션하기
+          </li>
+          <li>AS-PATH를 길게 만들어 루프가 자동 차단되는 과정을 확인해 보기</li>
+          <li>
+            Local Pref, MED, Community 등 추가 속성이 경로 결정 순위에 어떻게
+            영향을 주는지 표로 정리
+          </li>
+          <li>
+            Cisco/Juniper 가상 라우터에서 <code>router bgp</code> 구성을 넣어
+            eBGP 피어를 맺어 보는 실습
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

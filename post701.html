@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>무선 및 모바일 네트워크 소개</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>무선 및 모바일 네트워크 소개</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>무선 네트워크의 성장과 중요성</li>
+          <li>무선 vs 이동성: 두 가지 도전 과제</li>
+          <li>무선 네트워크의 주요 구성 요소</li>
+          <li>인프라 모드와 애드혹 모드 비교</li>
+          <li>무선 네트워크 유형 분류 (단일 홉/다중 홉, 인프라 유무)</li>
+        </ul>
+
+        <h2 id="성장-중요성">무선 네트워크의 성장과 중요성</h2>
+        <p>
+          무선 기술은 폭발적으로 성장하여 전 세계적으로 유선보다 무선 가입자가
+          많아졌습니다. 무선 단말기는 언제 어디서나 접속을 가능하게 하고, 무선
+          네트워크는 근무와 생활 방식을 변화시키며 클라우드, IoT 등 다양한
+          혁신적 서비스를 가능케 했습니다.
+        </p>
+
+        <h2 id="무선-이동성">무선 vs 이동성: 두 가지 도전 과제</h2>
+        <p>
+          무선은 케이블 없는 통신 매체의 문제를, 이동성은 사용자의 위치 변화를
+          따라가며 접속을 유지하는 문제를 다룹니다. 두 요소는 독립적이며
+          네트워크 설계 시 모두 고려해야 합니다.
+        </p>
+
+        <h2 id="구성요소">무선 네트워크의 주요 구성 요소</h2>
+        <p>
+          무선 네트워크는 무선 단말, 기지국(AP), 무선 링크로 구성됩니다. 무선
+          링크는 품질에 영향을 주며, 다중 접속 제어가 필요합니다. 기지국은
+          유선망과 무선을 중계합니다.
+        </p>
+
+        <h2 id="인프라-애드혹">인프라 모드와 애드혹 모드 비교</h2>
+        <p>
+          인프라 모드는 기지국을 통한 중앙 관리형 통신, 애드혹 모드는 단말 간
+          직접 통신입니다. 인프라는 인터넷 연결에 유리하며, 애드혹은 임시
+          네트워크에 유리합니다.
+        </p>
+
+        <h2 id="유형-분류">
+          무선 네트워크 유형 분류 (단일 홉/다중 홉, 인프라 유무)
+        </h2>
+        <p>
+          단일 홉 + 인프라(와이파이), 단일 홉 + 비인프라(Bluetooth), 다중 홉 +
+          인프라(Mesh), 다중 홉 + 비인프라(MANET) 등으로 분류됩니다. 각 방식은
+          목적과 환경에 따라 다르게 사용됩니다.
+        </p>
+
+        <h2 id="요약-팁">요약 및 학습 팁</h2>
+        <p>
+          <strong>요약:</strong> 무선 네트워크는 현대 필수 인프라로, 무선과
+          이동성 과제를 이해하고 구성 요소, 동작 모드, 유형을 파악하는 것이
+          중요합니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> 무선과 이동성을 대비한 예시, 구성도 그리기, 2x2
+          분류표 작성, 현실 사례 분류를 통해 개념을 익히세요.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

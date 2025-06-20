@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>전송 계층의 개요 및 서비스</title>
+
+    <!-- ▣ 공통 스타일 (이전 글과 동일) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>전송 계층의 개요 및 서비스</h2>
+      </header>
+
+      <article class="post-content">
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>논리적 통신</li>
+          <li>TCP와 UDP</li>
+          <li>애플리케이션 간 통신</li>
+        </ul>
+
+        <h2 id="논리적-통신">논리적 통신</h2>
+        <p>
+          전송 계층(Transport Layer)은
+          <strong>논리적인 통신 서비스를 제공</strong>하여, 서로 다른 호스트에서
+          실행되는 응용 프로세스들이 마치 직접 연결된 것처럼 데이터를 주고받을
+          수 있도록 해줍니다. 즉, 네트워크 계층이 호스트 대 호스트 간 데이터를
+          전달하는 기능을 한다면, 전송 계층은
+          <strong>프로세스 대 프로세스 간</strong>의 데이터 전달을 책임집니다.
+          전송 계층 프로토콜은 오직
+          <strong>종단 시스템(End System)</strong>에서만 동작하며, 중간
+          라우터들은 전송 계층 정보를 해석하거나 수정하지 않습니다. 이러한
+          논리적 통신을 통해 응용 프로그램은 네트워크의 세부 사항을 신경 쓰지
+          않고도 통신할 수 있고, 마치
+          <strong>프로세스 간에 전용 통신 회선이 있는 듯한 환상</strong>을 얻게
+          됩니다. 전송 계층은 송신 측에서 응용 계층 메시지를 세그먼트(segment)로
+          쪼개어 네트워크 계층으로 보내고, 수신 측에서는 도착한 세그먼트들을
+          다시 모아 원래의 메시지로 복원하여 해당 응용 프로세스로 전달합니다.
+        </p>
+
+        <p>
+          예를 들어, 한 가정의 12명의 아이들이 다른 가정의 12명 아이들에게
+          편지를 보내는 상황을 비유로 생각해봅시다. 이 비유에서 두 가정의 집은
+          각각 하나의 <strong>호스트(host)</strong>이고, 집 안의 각 아이들은
+          <strong>프로세스(process)</strong>에 해당합니다. 아이들이 편지를
+          봉투에 넣어 보내면 이것이 <strong>응용 계층 메시지</strong>이고, 두
+          집의 부모님이 편지를 받아 각 아이에게 전달하는 역할이 바로
+          <strong>전송 계층 프로토콜</strong>에 해당합니다. 반면 실제 우체국과
+          집배원은 <strong>네트워크 계층</strong>에 비유할 수 있는데, 편지
+          봉투들을 목적지 집(호스트)까지 운반하지만 어느 아이에게 전달해야
+          하는지는 관여하지 않습니다. 전송 계층은 이렇게
+          <strong>호스트 내 여러 프로세스들 사이의 통신</strong>을 가능하게
+          함으로써, 네트워크 계층 위에서 응용들이 원활하게 데이터를 교환하도록
+          돕습니다.
+        </p>
+
+        <h2 id="tcp와-udp">TCP와 UDP</h2>
+        <p>
+          현대 인터넷의 전송 계층에는 대표적으로 <strong>TCP</strong>와
+          <strong>UDP</strong>라는 두 가지 주요 프로토콜이 존재합니다.
+          <strong>TCP (Transmission Control Protocol)</strong>는
+          <strong>신뢰성 있는(in-order) 데이터 전송</strong>을 제공하며, 전송
+          중인 데이터의 순서 제어와 오류 복구 기능을 갖추고 있습니다. TCP는 연결
+          설정 과정(3-way 핸드셰이크)을 통해 통신 전에 송신자와 수신자가
+          <strong>연결을 설정(connection-oriented)</strong>하고, 데이터 흐름에
+          대한 <strong>혼잡 제어</strong>와 <strong>흐름 제어</strong> 기법도
+          내장하고 있어서 네트워크 혼잡이나 수신자 버퍼 관리 문제를 완화합니다.
+          반면 <strong>UDP (User Datagram Protocol)</strong>는
+          <strong>비연결형(connectionless)</strong> 프로토콜로서
+          <strong>신뢰성이나 전송 순서를 보장하지 않는</strong> 서비스를
+          제공합니다. UDP는 최대한 단순화된 헤더 구조와 최소한의 기능만을
+          제공하여, IP 계층의
+          <strong>베스트 에포트(best-effort)</strong> 서비스에 약간의 확장만
+          더한 형태입니다. 즉, UDP에서는 패킷 손실 시 재전송이나 흐름 제어를
+          수행하지 않으며,
+          <strong>추가 지연을 줄이고 처리량을 높이기 위해</strong> 오류 검출
+          정도(체크섬)만 지원하고 그 외의 복잡한 기능은 생략합니다.
+        </p>
+
+        <p>
+          TCP와 UDP 중 어느 것을 사용할지는 <strong>응용의 필요</strong>에 따라
+          달라집니다. 예를 들어, 웹 페이지나 파일 전송과 같이
+          <strong>데이터의 정확성과 순서 보장</strong>이 중요한 애플리케이션은
+          TCP를 사용하여 신뢰성을 확보합니다. TCP는 패킷 손실 시 재전송을 하고,
+          데이터가 원래 보낸 순서대로 목적지 애플리케이션에 도달하도록 보장하기
+          때문에, 이러한 응용에 적합합니다. 반면, 실시간 스트리밍이나 온라인
+          게임처럼
+          <strong
+            >약간의 손실이 발생해도 서비스 품질에 큰 문제가 없고 지연을
+            최소화</strong
+          >하는 것이 중요한 경우에는 UDP를 많이 사용합니다. UDP는 handshake 없이
+          바로 전송을 시작하고 혼잡 제어나 재전송으로 인한 지연이 없으므로, 지연
+          민감도가 높은 응용에서 선호됩니다. 이처럼 전송 계층은 두 가지 다른
+          서비스 모델(TCP의 신뢰적 전송 vs UDP의 비신뢰적 전송)을 제공함으로써,
+          다양한 요구 사항을 갖는 애플리케이션들을 효과적으로 지원합니다.
+        </p>
+
+        <h2 id="애플리케이션-간-통신">애플리케이션 간 통신</h2>
+        <p>
+          전송 계층이 제공하는 논리적 통신 덕분에,
+          <strong>애플리케이션 간 데이터 교환</strong>이 가능해집니다.
+          프로세스들은 <strong>소켓(socket)</strong>이라는 소프트웨어
+          인터페이스를 통해 네트워크로부터 오는 데이터나 네트워크로 보낼
+          데이터를 주고받는데, 전송 계층은 이 소켓을 통해 응용 프로세스들에게
+          서비스를 제공합니다. 예를 들어, 웹 브라우저(클라이언트)는 소켓을
+          생성하여 웹 서버의 소켓(IP주소와 포트 번호 조합)에 HTTP 요청 메시지를
+          전송하고, 전송 계층은 이 메시지를 목적지 서버의 해당 프로세스로
+          <strong>전달되도록 보장</strong>합니다. 이 때 브라우저나 서버
+          애플리케이션은
+          <strong
+            >TCP/UDP 같은 전송 계층 프로토콜의 세부 동작을 신경 쓰지
+            않고</strong
+          >, 마치 <strong>원격 프로세스와 직접 통신</strong>하는 것처럼 데이터를
+          읽고 쓰면 됩니다. 이러한 응용 간 통신은 내부적으로 전송 계층이
+          담당하며, <strong>포트 번호(port number)</strong>를 이용해 한 호스트
+          내 여러 소켓 중 정확한 대상과 통신하도록 이루어집니다.
+        </p>
+
+        <p>
+          또한 전송 계층은 <strong>종단 간(end-to-end)</strong> 특성을 갖습니다.
+          이는 전송 계층이 통신을 하는 두 끝단 시스템에서만 구현되고, 중간
+          경로의 다른 노드(라우터 등)는 개입하지 않는다는 뜻입니다. 이 특성
+          덕분에 애플리케이션 개발자는 네트워크 경로 중간의 장비들에 상관없이,
+          <strong>송신자와 수신자만 알면</strong> 통신 기능을 구현할 수
+          있습니다.
+        </p>
+
+        <h2 id="요약">요약</h2>
+        <ul>
+          <li>
+            전송 계층은 <strong>호스트 내 프로세스들 간의 논리적 통신</strong>을
+            제공합니다.
+          </li>
+          <li>
+            <strong>TCP</strong>: 연결 지향, 신뢰성·순서 보장, 흐름·혼잡 제어 /
+            <strong>UDP</strong>: 비연결, 단순·고속, 신뢰성 미보장.
+          </li>
+          <li>
+            소켓과 포트 번호를 이용해 다중화/역다중화를 수행, 여러 응용이 동시에
+            통신하더라도 데이터를 올바른 프로세스로 전달합니다.
+          </li>
+        </ul>
+
+        <h2 id="학습-팁">학습 팁</h2>
+        <ol>
+          <li>
+            우편물 배달 비유를 떠올려 전송 계층과 네트워크 계층의 역할 차이를
+            구분해 보세요.
+          </li>
+          <li>
+            <code>netstat</code> 등으로 열린 포트/소켓을 확인하며 실제 호스트의
+            다중 통신 모습을 살펴보세요.
+          </li>
+          <li>
+            HTTP, DNS, 스트리밍 등 주요 애플리케이션이 TCP 또는 UDP 중 어떤 전송
+            프로토콜을 사용하는지 이유를 분석해 보세요.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

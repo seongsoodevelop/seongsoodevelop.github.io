@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ICMP: 인터넷 제어 메시지 프로토콜</title>
+
+    <!-- ▣ 공통 스타일 (기존 블로그 글과 동일) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>ICMP: 인터넷 제어 메시지 프로토콜</h2>
+      </header>
+
+      <article class="post-content">
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>ICMP의 탄생 배경 (IP의 한계 보완)</li>
+          <li>ICMP의 역할과 종류 (에러 보고 메시지, 질의 메시지)</li>
+          <li>Ping과 Traceroute 예시로 보는 ICMP 동작</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="icmp의-탄생-배경-ip의-한계-보완">
+          ICMP의 탄생 배경 (IP의 한계 보완)
+        </h2>
+        <p>
+          <strong>ICMP(Internet Control Message Protocol)</strong>는 IP
+          네트워크에서 발생하는 오류나 상태 정보를 전송하기 위해 고안된
+          <em>네트워크 계층 부속 프로토콜</em>입니다. IP 프로토콜 자체에는 오류
+          제어나 진단 기능이 부족하기 때문에(예를 들어 IP 패킷이 목적지에 못
+          가더라도 IP는 별도 알림을 주지 않음), 이러한 약점을 보완하고자 ICMP가
+          함께 설계되었습니다.
+        </p>
+
+        <h2 id="icmp의-역할과-종류-에러-보고-메시지-질의-메시지">
+          ICMP의 역할과 종류 (에러 보고 메시지, 질의 메시지)
+        </h2>
+        <p>
+          ICMP의 주요 <strong>기능 역할</strong>은 두 가지로 나눌 수 있습니다.
+        </p>
+        <ul>
+          <li>
+            <strong>오류 보고(error-reporting) 메시지</strong> – 패킷 전달 중
+            문제가 발생했을 때 출발지에 이를 알려주는 용도
+          </li>
+          <li>
+            <strong>질의/응답(query) 메시지</strong> – 네트워크 상태를 묻고
+            답하는 진단용 메시지
+          </li>
+        </ul>
+
+        <h3>오류 보고 메시지</h3>
+        <p>대표적인 오류 보고 메시지는 다음과 같습니다.</p>
+        <ul>
+          <li>
+            <strong>Destination Unreachable</strong> (타입 3) –
+            네트워크·호스트·프로토콜·포트 등이 도달 불가할 때
+          </li>
+          <li>
+            <strong>Time Exceeded</strong> (타입 11) – IP 헤더의 TTL이 0이 되어
+            패킷이 폐기될 때
+          </li>
+          <li>
+            <strong>Parameter Problem</strong> (타입 12) – IP 헤더가 잘못되었을
+            때
+          </li>
+          <li>
+            <strong>Source Quench</strong> (타입 4, 현재는 폐기) – 과도한 전송
+            속도를 줄이라는 알림
+          </li>
+        </ul>
+        <p>
+          오류 메시지는 문제를 일으킨 원본 IP 패킷의
+          <em>헤더 + 처음 8바이트</em>를 인용해 전달하므로, 송신지는 어떤 패킷이
+          문제였는지 식별할 수 있습니다.
+        </p>
+
+        <h3>질의/응답 메시지</h3>
+        <p>ICMP 질의 메시지는 네트워크 진단에 많이 쓰입니다.</p>
+        <ul>
+          <li>
+            <strong>Echo Request / Echo Reply</strong> (타입 8/0) –
+            <em>Ping</em> 명령의 기반
+          </li>
+          <li>
+            <strong>Timestamp Request / Reply</strong> – 대상 호스트의 현 시각
+            질의
+          </li>
+          <li>
+            <strong>Address Mask Request / Reply</strong> – 서브넷 마스크 질의
+            (거의 사용되지 않음)
+          </li>
+          <li>
+            <strong>Router Solicitation / Advertisement</strong> – 인근 라우터
+            발견
+          </li>
+        </ul>
+
+        <h2 id="ping과-traceroute-예시로-보는-icmp-동작">
+          Ping과 Traceroute 예시로 보는 ICMP 동작
+        </h2>
+
+        <h3>Ping</h3>
+        <p>
+          Ping은 송신자가 대상에게 <em>ICMP Echo Request</em>를 보내고, 대상이
+          <em>Echo Reply</em>를 돌려주는 과정으로 <strong>접근성</strong> 및
+          <strong>왕복 지연 시간(RTT)</strong>을 측정합니다.
+        </p>
+
+        <h3>Traceroute</h3>
+        <p>
+          Traceroute는 목적지까지의 경로를 알아내기 위해 TTL 값을 1부터 차례로
+          증가시키며 여러 개의 패킷을 전송합니다.
+        </p>
+        <ol>
+          <li>
+            TTL = 1 → 첫 라우터에서 TTL이 0이 되어
+            <em>Time Exceeded</em> 메시지를 반환
+          </li>
+          <li>TTL = 2 → 두 번째 라우터에서 Time Exceeded 응답</li>
+          <li>…</li>
+          <li>
+            충분히 큰 TTL → 목적지에서 <em>Port Unreachable</em> 메시지(도달
+            확인) → 프로빙 종료
+          </li>
+        </ol>
+        <p>
+          응답 ICMP의 발신 IP를 순서대로 기록해
+          <strong>각 홉의 주소와 RTT</strong>를 확인할 수 있습니다.
+        </p>
+
+        <h2 id="요약-및-학습-팁">요약 및 학습 팁</h2>
+        <ul>
+          <li>
+            <strong>ICMP</strong>는 IP의 부족한 오류·진단 기능을 보완하는
+            <em>관리용 프로토콜</em>.
+          </li>
+          <li>
+            두 축: 오류 보고(Destination Unreachable, Time Exceeded 등) /
+            질의-응답(Echo, Timestamp 등).
+          </li>
+          <li>
+            Ping = Echo Request/Reply 로 접근성·RTT 확인, Traceroute = TTL +
+            Time Exceeded로 경로 추적.
+          </li>
+        </ul>
+
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>ICMP 타입·코드 표를 직접 작성해 머릿속에 정리해 보세요.</li>
+          <li>
+            <code>ping</code>, <code>traceroute</code> 명령을 실행해 결과를
+            분석해 보세요.
+          </li>
+          <li>
+            방화벽에서 ICMP를 차단했을 때 Ping/Traceroute 결과가 어떻게
+            달라지는지 실험해 보세요.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

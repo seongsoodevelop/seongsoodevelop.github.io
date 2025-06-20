@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>네트워크 관리: SNMP 및 멀티캐스트 라우팅</title>
+
+    <!-- ▣ 공통 스타일 (기존 블로그 글과 동일) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>네트워크 관리: SNMP 및 멀티캐스트 라우팅</h2>
+      </header>
+
+      <article class="post-content">
+        <!-- ───────────────────────────────────────────────────── -->
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>네트워크 관리 개요와 SNMP의 역할</li>
+          <li>SNMP 아키텍처 (관리 시스템, 에이전트, MIB)</li>
+          <li>SNMP 동작 방식 (Get/Set 요청과 Trap 알림)</li>
+          <li>멀티캐스트 통신 개념과 IGMP</li>
+          <li>멀티캐스트 라우팅 방식 (소스 기반 트리 vs 공유 트리)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="개념-설명">개념 설명</h2>
+        <p>
+          네트워크가 커지고 복잡해질수록
+          <strong>효율적인 관리와 모니터링</strong>이 중요해집니다.
+          <strong>네트워크 관리(Network Management)</strong>란 운영자가 네트워크
+          성능을 확인하고, 문제를 진단하며, 설정을 조정하는 모든 활동을
+          의미합니다. 이를 공식적으로 정의한 문구에 따르면,
+          <em
+            >“네트워크 관리란 적절한 비용으로 실시간 운용 성능 및 QoS 요구사항을
+            만족하기 위해 하드웨어, 소프트웨어, 인력 요소를 배치, 통합, 조정하여
+            네트워크와 구성 요소를 모니터, 테스트, 폴링, 설정, 분석, 평가 및
+            제어하는 것”</em
+          >이라고 합니다. 이러한 네트워크 관리를 위해 표준화된 프로토콜이
+          <strong>SNMP(Simple Network Management Protocol)</strong>입니다.
+        </p>
+
+        <h3>SNMP: 단순 네트워크 관리 프로토콜</h3>
+        <p>
+          SNMP는 <strong>관리 시스템(manager)</strong>과 각 네트워크 장비에
+          상주하는 <strong>에이전트(agent)</strong>로 구성된
+          <strong>관리 프레임워크</strong>입니다. 관리 대상 장비(라우터, 스위치,
+          서버 등)는 <strong>관리 객체</strong>(예: CPU 사용률, 인터페이스
+          트래픽 량, 메모리 상태 등)를 가지고 있고, 이들의 값이
+          <strong>MIB(Management Information Base)</strong>라는 데이터베이스
+          구조로 정리되어 있습니다. 예를 들어 라우터의 MIB에는 인터페이스 별
+          바이트 카운터, 패킷 에러 수, 온도 센서 값 등이 트리 형태 OID(Object
+          ID)로 저장됩니다.
+        </p>
+
+        <p>
+          <strong>SNMP 관리 시스템</strong>은 네트워크를 주기적으로
+          <strong>폴링(polling)</strong>하여 MIB 데이터를 읽어오거나(SetRequest)
+          네트워크 설정을 변경할 수도 있습니다. 반대로 에이전트는 중요한
+          이벤트(예: 링크 다운, 장비 재부팅 감지)가 발생하면
+          <strong>Trap 메시지</strong>를 관리 시스템으로
+          <strong>자발적으로 전송</strong>하여 알릴 수 있습니다. 이러한 SNMP의
+          동작 모드는 두 가지로 요약됩니다: <strong>요청/응답 모드</strong>와
+          <strong>트랩 모드</strong>.
+        </p>
+
+        <h4>요청/응답 모드</h4>
+        <p>
+          관리자가 에이전트에게 정보를 요청하고, 에이전트가 응답합니다. 구체적인
+          메시지 종류로, 관리 시스템→에이전트로는
+          <strong>GetRequest</strong> (특정 MIB 변수 값을 요구),
+          <strong>GetNextRequest</strong> (다음 변수값 요구, 주로 순차 조회에
+          사용), <strong>GetBulkRequest</strong> (대량의 데이터 한꺼번에 요구),
+          <strong>SetRequest</strong> (MIB 변수값 설정 명령)이 있습니다. 이에
+          대해 <strong>Response</strong> 메시지가 에이전트→관리자로 돌아와
+          요청된 값을 알려주거나 설정 결과를 확인시켜줍니다. 또한 관리
+          시스템들끼리 정보를 교환하는 <strong>InformRequest</strong> 메시지도
+          있습니다 (예: 여러 관리 서버 환경에서 서로 상태를 동기화).
+        </p>
+
+        <h4>트랩(Trap) 모드</h4>
+        <p>
+          에이전트→관리자로 <strong>Trap</strong> 메시지가 비동기적으로
+          보내집니다. 에이전트 측에서 사전에 정의된 특정 이벤트가 발생하면 (예:
+          링크 장애, CPU 과부하, 인증 실패 시도 등) 관리자의 요청을 기다리지
+          않고 <strong>바로 통보</strong>하는 것입니다. Trap 메시지에는 어떤
+          이벤트인지 식별할 수 있는 <strong>트랩 타입</strong>과 관련 정보(예:
+          해당 포트 번호, 발생 시각 등)가 담깁니다.
+        </p>
+
+        <p>
+          SNMP 메시지들은 UDP 기반으로 전송되며, SNMPv3에서는 인증·암호화를
+          지원해 보안을 강화했습니다. SNMP는 단순하지만 강력한 관리 수단으로,
+          <strong>중앙에서 수천 대 장비의 상태를 수집·제어</strong>할 수 있게
+          해줍니다. 다만 폴링 주기가 너무 짧으면 부하가 될 수 있으므로,
+          <em>중요 지표는 Trap으로 받고 일반 지표는 일정 간격으로 폴링</em>하는
+          등 균형 잡힌 운영이 필요합니다.
+        </p>
+
+        <h3>멀티캐스트 통신 및 IGMP</h3>
+        <p>
+          <strong>멀티캐스트(Multicast)</strong>는
+          <strong
+            >하나의 송신자가 특정 그룹에 속한 여러 수신자들에게 동시에 데이터
+            전송</strong
+          >하는 방식입니다. 예를 들어 실시간 화상회의나 IPTV 방송처럼 동일한
+          콘텐츠를 다수에게 보낼 때 멀티캐스트를 사용하면, 송신자가 한 번만
+          데이터를 보내고 네트워크 내 라우터들이 복사해 전달하므로
+          <strong>대역폭을 효율적으로 사용</strong>할 수 있습니다.
+        </p>
+
+        <p>멀티캐스트 구현에는 두 가지 핵심 프로토콜이 필요합니다.</p>
+        <ol>
+          <li>
+            <strong>멀티캐스트 그룹 관리 프로토콜</strong> –
+            <strong>IGMP</strong>: 호스트가 그룹 가입/탈퇴 의사를 인접 라우터에
+            알림
+          </li>
+          <li>
+            <strong>멀티캐스트 라우팅 프로토콜</strong> – 라우터 간에 멀티캐스트
+            분배 트리 형성
+          </li>
+        </ol>
+
+        <h4>IGMP</h4>
+        <p>
+          호스트-라우터 간 프로토콜입니다. 라우터는 주기적으로
+          <strong>Query</strong> 메시지를 방송하고, 호스트는 자신이 가입한
+          그룹에 대해 <strong>Report</strong> 메시지로 응답합니다. 응답이
+          사라지면 라우터는 해당 호스트를 그룹 멤버에서 제거합니다.
+        </p>
+
+        <h4>멀티캐스트 라우팅 프로토콜</h4>
+        <p>
+          목표는 <strong>그룹 구성원들에게 패킷을 전달하는 트리</strong>를
+          만드는 것입니다. 접근 방식은 두 가지입니다.
+        </p>
+
+        <ul>
+          <li>
+            <strong>송신자 기반 트리(Source-Based Tree)</strong> – 송신자마다
+            별도 트리 구축. <em>DVMRP</em>, <em>MOSPF</em>, <em>PIM-DM</em> 등.
+            밀집(dense) 환경에 적합.
+          </li>
+          <li>
+            <strong>그룹 공유 트리(Group-Shared Tree)</strong> – 그룹당 하나의
+            공통 트리, <em>RP(Rendezvous Point)</em>를 중심으로. <em>CBT</em>,
+            <em>PIM-SM</em> 등. 희소(sparse) 환경에 적합.
+          </li>
+        </ul>
+
+        <p>
+          PIM-SM은 현재 사실상 표준이며, 초기엔 공유 트리를 사용하다 트래픽이
+          많아지면 소스별 단일 트리로 전환하는 하이브리드 방식을 지원합니다.
+        </p>
+
+        <h2 id="요약-및-학습-팁">요약 및 학습 팁</h2>
+        <ul>
+          <li>
+            <strong>SNMP</strong> – <em>관리자</em>, <em>에이전트</em>,
+            <em>MIB</em> 구조. 메시지: Get / GetNext / GetBulk / Set / Response
+            / Trap / Inform.
+          </li>
+          <li>
+            <strong>멀티캐스트</strong> – 호스트-라우터: IGMP. 라우터-라우터:
+            PIM-DM(송신자 트리) vs PIM-SM(공유 트리).
+          </li>
+        </ul>
+
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>
+            SNMP OID 트리를 직접 몇 개 조회해 보면서 구조를 감각적으로 익히세요.
+            예) <code>snmpwalk -v2c -c public 192.0.2.1 1.3.6.1.2.1.1</code>
+          </li>
+          <li>
+            IGMP Query/Report, PIM Hello 패킷을 Wireshark로 캡처해 실제
+            멀티캐스트 제어 흐름을 관찰해 보세요.
+          </li>
+          <li>
+            IPTV·주식 시세 방송 등 실무 멀티캐스트 사례를 찾아보면서 기술 적용
+            맥락을 이해하면 훨씬 기억에 남습니다.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>무선 LAN 보안</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>무선 LAN 보안</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>WEP의 취약점</li>
+          <li>WPA와 WPA2의 개선</li>
+        </ul>
+
+        <p>
+          이번 글에서는 <strong>무선 LAN(Wi-Fi) 보안</strong>의 발전 과정을
+          정리합니다. 유선망과 달리 무선망에서는 전파가 공중으로 broadcast되기
+          때문에, 적절한 보안 대책이 없으면 공격자가 무선 신호를 가로채 네트워크
+          트래픽을 엿볼 수 있습니다. 따라서 Wi-Fi 네트워크에서는
+          <strong>암호화 프로토콜</strong>을 사용해 무선 구간의 통신을 보호하는
+          것이 필수입니다. 대표적인 무선 보안 프로토콜로는 과거의
+          <strong>WEP</strong>부터 개선된 <strong>WPA</strong>,
+          <strong>WPA2</strong>, 그리고 최신 <strong>WPA3</strong>가 있습니다.
+        </p>
+
+        <h2 id="wep">WEP의 취약점</h2>
+        <p>
+          <strong>WEP (Wired Equivalent Privacy)</strong>은 초기 무선 LAN에
+          도입된 첫 번째 보안 프로토콜입니다. WEP는 RC4 암호를 기반으로 공유된
+          키로 프레임을 암호화하고 CRC-32 체크섬으로 무결성을 확인했습니다.
+          그러나 IV(Initialization Vector)의 길이가 짧아 키 재사용이 빈번하고,
+          고정 키 방식과 평문 IV 전송 구조 때문에 키 추측이 쉬워 몇 분 만에
+          크랙당할 수 있습니다.
+        </p>
+
+        <h2 id="wpa">WPA와 WPA2의 개선</h2>
+        <p>
+          <strong>WPA</strong>는 WEP의 단점을 보완하기 위해 TKIP를 도입해 동적
+          키를 제공하고 Michael 알고리즘으로 무결성을 강화했습니다.
+          <strong>WPA2</strong>는 AES-CCMP를 채택해 근본적인 보안 강화를
+          이뤘으며, IEEE 802.1X 기반 인증(EAP)과 PSK 모드를 모두 지원합니다.
+          WPA2도 KRACK과 같은 일부 취약점이 발견되었지만,
+          <strong>WPA3</strong>에서는 SAE를 도입해 암호 추측 공격과 4자
+          핸드셰이크 취약점을 극복했습니다.
+        </p>
+
+        <p>
+          <strong>요약:</strong> 무선 LAN 보안은 WEP → WPA → WPA2 → WPA3 순으로
+          발전하며 보안성이 크게 향상되었습니다. WPA2-AES 또는 WPA3 사용과
+          강력한 암호 설정이 안전한 Wi-Fi 환경의 핵심입니다.
+        </p>
+        <p>
+          <em>학습 팁:</em> 자신이 사용하는 Wi-Fi 공유기 보안 옵션을 확인해
+          WPA2-AES 이상으로 설정하세요. Wireshark와 크랙 툴로 WEP와 WPA2를 비교
+          실습해 보면 각 프로토콜의 보안 강도를 직접 체감할 수 있습니다.
+        </p>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

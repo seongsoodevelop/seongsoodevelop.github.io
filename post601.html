@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>데이터 링크 계층 개요 및 기능</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>데이터 링크 계층 개요 및 기능</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>데이터 링크 계층의 정의와 역할</li>
+          <li>
+            데이터 링크 계층의 주요 기능 (프레이밍, 오류 제어, 흐름 제어 등)
+          </li>
+          <li>데이터 링크 계층의 구현 (NIC)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="데이터-링크-계층의-정의와-역할">
+          데이터 링크 계층의 정의와 역할
+        </h2>
+        <p>
+          데이터 링크 계층은 네트워크 <strong>2계층</strong>으로, 인접한 두
+          노드를 물리적인 매체로 연결하고 그
+          <strong>연결 상태를 관리</strong>하는 역할을 합니다. 쉽게 말해,
+          네트워크 계층(IP 계층)이 전달한 데이터그램을 받아서
+          <strong>프레임(frame)</strong>이라는 단위로 캡슐화한 후, 동일한
+          링크(연결)에 있는 다음 노드까지 전달합니다.
+        </p>
+        <p>
+          여기서 링크란 <strong>직접 연결된 두 장치 간의 통신 경로</strong>를
+          의미하며, 유선 또는 무선 매체가 될 수 있습니다. 예를 들어 이더넷
+          케이블로 연결된 PC와 스위치 사이나, Wi-Fi로 연결된 PC와 무선 AP 사이가
+          하나의 링크입니다.
+        </p>
+        <p>
+          <strong>네트워크 계층이 끝단 간(end-to-end) 전송을 담당</strong
+          >한다면, <strong>데이터 링크 계층은 각 구간(hop)별 전송</strong>을
+          맡는다고 볼 수 있습니다. 이러한 특성 때문에 데이터 링크 계층은
+          <strong>인접 노드 간의 신뢰성과 효율을 높이는 다양한 기능</strong>들을
+          제공합니다.
+        </p>
+
+        <h2 id="데이터-링크-계층의-주요-기능">데이터 링크 계층의 주요 기능</h2>
+        <p>
+          데이터 링크 계층이 제공하는 주요 기능으로는 <strong>프레이밍</strong>,
+          <strong>매체 접근 제어</strong>,
+          <strong>오류 제어(검출 및 수정)</strong>, <strong>흐름 제어</strong>,
+          그리고 <strong>반이중/전이중 통신 지원</strong> 등이 있습니다.
+        </p>
+        <ul>
+          <li>
+            <strong>프레이밍(Framing)</strong>: 상위 계층에서 내려온
+            데이터그램(예: IP 패킷)에 헤더와 테일러(trailer)를 덧붙여
+            <strong>프레임</strong>을 구성합니다. 헤더에는 송신지와 목적지의
+            <strong>링크 계층 주소(MAC 주소)</strong> 등이 포함되고, 테일러에는
+            오류 검출을 위한 체크섬(FCS) 같은 정보가 붙습니다. 프레이밍을 통해
+            <strong>데이터 경계 구분</strong>이 가능해져서 수신 측이 프레임
+            단위로 데이터를 식별할 수 있습니다. 또한, 하나의 링크를 여러 장치가
+            공유할 때 <strong>매체 접근 제어(MAC)</strong>를 통해 어느 장치가
+            언제 통신할지 결정하는 역할도 합니다. 예를 들어
+            <strong>CSMA/CD</strong> 프로토콜은 버스형 이더넷에서 각 노드가 전송
+            전에 채널이 비어있는지 감지하게 함으로써 충돌을 줄이는 대표적인 MAC
+            기법입니다.
+          </li>
+          <li>
+            <strong>오류 제어(Error Control)</strong>: 물리적 신호 감쇠나
+            잡음으로 인해 비트 에러가 발생할 수 있는데, 데이터 링크 계층은 이를
+            <strong>검출</strong>하고 때로는 <strong>수정</strong>하는 기능을
+            합니다. 프레임에 <strong>패리티 비트</strong>나
+            <strong>CRC</strong>와 같은 오류 검출 부호를 추가하여 수신 측이
+            프레임에 오류가 있는지 판단하게 합니다. 오류가 검출되면 수신 측은
+            해당 프레임을 폐기하거나 송신 측에 재전송을 요구할 수 있습니다. 일부
+            링크 계층 프로토콜(특히 무선)은
+            <strong>에러 수정 코드(FEC)</strong>를 사용하여 재전송 없이도 일정
+            범위의 오류를 스스로 교정하기도 합니다.
+          </li>
+          <li>
+            <strong>흐름 제어(Flow Control)</strong>: 송신 측과 수신 측의 처리
+            속도 차이로 인해 버퍼 오버플로우가 생기지 않도록
+            <strong>전송 속도를 조절</strong>하는 메커니즘입니다. 주로 인접한 두
+            노드 사이에서 송신자가 너무 빠르게 보내지 않도록 제어하여, 프레임
+            손실 없이 안정적으로 통신하도록 돕습니다.
+          </li>
+          <li>
+            <strong>반이중/전이중 통신</strong>: 데이터 링크 계층은 링크의 양쪽
+            방향 통신 방식을 결정합니다.
+            <strong>반이중(half-duplex)</strong> 링크에서는 양 노드 모두 송수신
+            기능이 있지만 <strong>동시에 송신하지는 못하고</strong> 번갈아
+            통신합니다. 반면 <strong>전이중(full-duplex)</strong> 링크에서는
+            양측이 동시에 송신과 수신을 할 수 있어, 효율적인 양방향 통신이
+            가능합니다. 현대의 스위치 연결은 대부분 전이중을 사용하여 충돌 없이
+            동시에 통신을 주고받을 수 있습니다.
+          </li>
+        </ul>
+        <p>
+          이 밖에도 데이터 링크 계층은 상위
+          <strong>네트워크 계층과 물리 계층을 연결</strong>해주는 인터페이스
+          역할도 수행합니다. 수신 측에서는 수신한 프레임에서 헤더와 트레일러를
+          제거하고 원래의 데이터그램을 복원한 뒤, 이를 네트워크 계층에
+          전달합니다. 이러한 과정에서 데이터 링크 계층은 상위 계층이 링크의
+          특성(예: 이더넷인지 Wi-Fi인지)을 신경 쓰지 않도록
+          <strong>계층 간 완충 역할</strong>을 합니다.
+        </p>
+
+        <h2 id="데이터-링크-계층의-구현">데이터 링크 계층의 구현 (NIC)</h2>
+        <p>
+          데이터 링크 계층은 <strong>주로 하드웨어적인 형태로 구현</strong>되는
+          것이 특징입니다. 일반적으로
+          <strong>네트워크 인터페이스 카드(NIC)</strong> 또는
+          <strong>네트워크 어댑터</strong>에 데이터 링크 계층의 기능이 내장되어
+          있습니다. 예를 들어 PC의 이더넷 카드나 무선 랜카드 안에는 링크 계층을
+          처리하는 전용 칩과 펌웨어가 있어서 프레임 송수신, 오류 검출, MAC
+          프로토콜 동작 등을 수행합니다.
+        </p>
+        <p>
+          NIC는 호스트의 시스템 버스(예: PCI 버스)에 연결되어 CPU, 메모리와
+          상호작용하며, 소프트웨어(드라이버)와 협력하여 동작합니다. 데이터 링크
+          계층은
+          <strong>하드웨어(칩)적 구현 + 소프트웨어 드라이버</strong> 조합으로
+          이루어져 높은 속도의 처리가 요구되는 프레임 단위를 실시간으로 다루게
+          됩니다. 이러한 구조 덕분에 링크 계층 동작은 사용자 개입 없이 자동으로
+          수행되며,
+          <strong>전송 성능을 최대한 끌어올릴 수 있도록 최적화</strong>되어
+          있습니다.
+        </p>
+
+        <h2 id="요약-및-학습-팁">요약 및 학습 팁</h2>
+        <p>
+          데이터 링크 계층은
+          <strong>인접 노드 간 데이터 전달을 책임지는 핵심 계층</strong>으로,
+          프레임 구성부터 오류 관리, 매체 접근 제어까지 다양한 기능을
+          제공합니다. 상위의 네트워크 계층이 IP 주소로 대상 간 논리적인 이동
+          경로를 정하면, 링크 계층은 실제로
+          <strong>다음 홉까지 데이터를 안전하고 효율적으로 운반</strong>하는
+          셈입니다. 요약하면,
+          <strong
+            >네트워크 계층이 “어디로” 보낼지 결정하면 링크 계층은 “어떻게”
+            보낼지</strong
+          >
+          수행하는 역할을 합니다.
+        </p>
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>
+            데이터 링크 계층을 이해할 때는 <strong>비유를 활용</strong>하면
+            도움이 됩니다. 예: 전체 인터넷에서의 여행을 기차-비행기-택시로 여러
+            구간 나눠 이동하는 비유
+          </li>
+          <li>
+            직접 랜케이블로 두 컴퓨터를 연결해보거나 스위치 허브에 여러 장치를
+            연결해 <strong>패킷 캡처 도구</strong>로 프레임을 살펴보세요.
+          </li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

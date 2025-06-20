@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이더넷과 MAC 주소, 주소 학습</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      a {
+        color: var(--primary-dark);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .site-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
+        color: #fff;
+        text-align: center;
+        padding: 3rem 1rem 2.5rem;
+      }
+      .logo {
+        margin: 0;
+        font-size: 2.4rem;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .post-header h2 {
+        margin: 0 0 1rem;
+        color: var(--primary);
+      }
+      .post-content {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem 1.5rem;
+      }
+      .post-content h2,
+      .post-content h3 {
+        color: var(--primary);
+      }
+      .post-content ul {
+        margin: 0.4rem 0 1rem 1.2rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <h1 class="logo"><a href="index.html">김성수의 블로그</a></h1>
+    </header>
+
+    <main class="container">
+      <a class="back-link" href="index.html">← 글 목록으로</a>
+
+      <header class="post-header">
+        <h2>이더넷과 MAC 주소, 주소 학습</h2>
+      </header>
+
+      <article class="post-content">
+        <h2 id="목차">목차</h2>
+        <ul>
+          <li>Ethernet의 개요 및 특징</li>
+          <li>Ethernet 프레임 구조와 MAC 주소</li>
+          <li>MAC 주소의 구조와 특성 (48비트 주소, 글로벌 고유성)</li>
+          <li>스위치의 MAC 주소 학습 (주소 테이블 구축 원리)</li>
+          <li>요약 및 학습 팁</li>
+        </ul>
+
+        <h2 id="ethernet-개요-특징">Ethernet의 개요 및 특징</h2>
+        <p>
+          <strong>이더넷(Ethernet)</strong>은 현재 전 세계에서 가장 널리 쓰이는
+          <strong>유선 LAN 기술</strong>입니다. 1970년대 Xerox PARC의 로버트
+          메틀칼프 등이 ALOHA 시스템을 응용하여 개발했으며, 1983년에 IEEE 802.3
+          표준으로 제정되었습니다. 초기 이더넷은 여러 노드가 하나의 동축 케이블
+          버스를 공유하는 형태로, <strong>CSMA/CD</strong> 다중 접근 프로토콜을
+          사용하여 충돌을 제어했습니다. 이러한 버스형(topology) 이더넷에서는
+          동일 버스에 연결된 모든 노드가 <strong>하나의 충돌 도메인</strong>을
+          이루어, 한 노드의 프레임 전송이 다른 모든 노드에 전파되었습니다.
+        </p>
+        <p>
+          1990년대 이후로는 <strong>스위치 기반 별형(topology)</strong> 이더넷이
+          보편화되어, 각 노드가 스위치 장비와 개별적으로 연결되는 구조로
+          발전했습니다. 현대의 스위치드 이더넷은 각 링크가
+          <strong>전이중(full-duplex)</strong>이어서 더 이상 CSMA/CD로 충돌을
+          제어할 필요가 없으며, 동시에 여러 쌍의 통신이 가능하여 네트워크 성능이
+          크게 향상되었습니다. Ethernet은 초기 10Mbps에서 시작하여 Fast
+          Ethernet(100Mbps), Gigabit Ethernet(1Gbps), 그리고 수십 기가비트에
+          이르는 속도 표준들로 계속 확장되어 왔습니다. 또한 이더넷은
+          <strong>연결 설정 절차 없이</strong> 데이터를 보내는
+          <strong>비연결성(connectionless)</strong> 특성과,
+          <strong
+            >개별 프레임에 대한 확인응답 없는 비신뢰적(unreliable) 전송</strong
+          >
+          특성을 가집니다. 이는 설계가 단순해지는 대신, 높은 신뢰성은 상위
+          계층에 맡기는 철학을 보여줍니다. 정리하면 이더넷은
+          <strong>간단하고 효율적이며 확장성이 뛰어난 LAN 기술</strong>로서,
+          유선 환경의 사실상 표준이 되었습니다.
+        </p>
+
+        <h2 id="ethernet-프레임-mac-주소">Ethernet 프레임 구조와 MAC 주소</h2>
+        <p>
+          Ethernet에서 데이터는 <strong>프레임(frame)</strong>이라는 형식으로
+          전달됩니다. 이더넷 프레임은 <strong>프리앰블(preamble)</strong>이라는
+          신호 동기화용 비트 패턴으로 시작하여, 다음과 같은 주요 필드들로
+          구성됩니다:
+        </p>
+        <ul>
+          <li><strong>목적지 MAC 주소 (6바이트)</strong></li>
+          <li><strong>소스 MAC 주소 (6바이트)</strong></li>
+          <li><strong>유형/길이(Type/Length, 2바이트)</strong></li>
+          <li><strong>데이터(payload)</strong></li>
+          <li><strong>FCS(Frame Check Sequence, 4바이트)</strong></li>
+        </ul>
+        <p>
+          이처럼 <strong>MAC 주소</strong>는 Ethernet 프레임의 핵심 요소로,
+          <strong>링크 계층의 식별자</strong> 역할을 합니다. Ethernet에서 통신을
+          할 때는 IP 주소 대신
+          <strong>MAC 주소를 기반으로 프레임을 주고받으며</strong>, 네트워크
+          상의 장비들은 이 MAC 헤더를 보고 어느 포트로 프레임을 전달할지
+          결정하게 됩니다. 각 NIC는 수신한 프레임의
+          <strong>목적지 MAC 주소가 자기 것과 일치하거나 브로드캐스트</strong>인
+          경우에만 상위 계층으로 데이터를 넘기고, 그렇지 않은 프레임은 하드웨어
+          레벨에서 필터링하여 버립니다.
+        </p>
+
+        <h2 id="mac-주소-구조-특성">
+          MAC 주소의 구조와 특성 (48비트 주소, 글로벌 고유성)
+        </h2>
+        <p>
+          <strong>MAC 주소</strong>는 LAN 상에서 각 인터페이스를 유일하게
+          식별하는 48비트(6바이트) 식별자입니다. MAC 주소는 흔히 16진수 12자리로
+          표현되며, 사람이 보기 쉽게 두 자리씩 묶어 구분합니다 (예:
+          1A-2F-BB-76-09-AD). 이 주소는
+          <strong>전 세계적으로 고유</strong>하도록 설계되었으며, 일반적으로 MAC
+          주소는 <strong>제조 단계</strong>에서 NIC의 ROM에 굽혀져 나오며 보통
+          변경되지 않습니다. MAC 주소의 구조는
+          <strong>앞 3바이트는 제조사 OUI</strong>,
+          <strong>뒤 3바이트는 일련 번호</strong>로 구성됩니다.
+        </p>
+
+        <h2 id="스위치-mac-학습">
+          스위치의 MAC 주소 학습 (주소 테이블 구축 원리)
+        </h2>
+        <p>
+          이더넷 <strong>스위치</strong>는 들어온 프레임의
+          <strong>목적지 MAC 주소를 확인하여</strong> 그 주소가 위치한 포트로만
+          프레임을 전송합니다. 이를 위해 <strong>MAC 주소 테이블</strong>을
+          유지하며,
+          <strong>프레임의 소스 MAC과 포트를 매핑하여 학습</strong>합니다.
+          스위치는 수신 프레임의 소스 MAC과 포트를 테이블에 기록하고, 목적지
+          MAC이 테이블에 없으면 다른 포트로
+          <strong>홍수(flooding)</strong>합니다. 응답이 돌아오면 목적지 MAC도
+          학습해 이후에는 해당 포트로만 전달합니다.
+        </p>
+
+        <h2 id="요약-학습-팁">요약 및 학습 팁</h2>
+        <p>
+          <strong>요약:</strong> 이더넷은
+          <strong>대표적인 링크 계층 프로토콜</strong>로 MAC 주소를 사용해 로컬
+          네트워크 내에서 프레임을 전달합니다. 스위치는 MAC 주소 학습을 통해
+          효율적인 포워딩을 수행하며 네트워크 성능을 높입니다.
+        </p>
+        <p><em>학습 팁</em></p>
+        <ol>
+          <li>직접 LAN을 구성하고 스위치 MAC 테이블을 조회해 보기</li>
+          <li>Wireshark 등으로 프레임 구조와 MAC 주소를 관찰해 보기</li>
+          <li>MAC과 IP의 차이 및 ARP 역할 정리</li>
+        </ol>
+      </article>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 김성수. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
