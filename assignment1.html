@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>네트워크 과제1 (Echo) 보고서</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f9f9fb;
+        --surface: #ffffff;
+        --primary: #2c5282;
+        --primary-dark: #2b6cb0;
+        --text: #1a202c;
+        --text-light: #4a5568;
+        --radius-lg: 1rem;
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Pretendard", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.72;
+      }
+      h1,
+      h2,
+      h3 {
+        color: var(--primary);
+        margin-top: 2.2rem;
+      }
+      h1 {
+        font-size: 2.1rem;
+        margin-top: 0;
+      }
+      h2 {
+        font-size: 1.55rem;
+      }
+      h3 {
+        font-size: 1.25rem;
+      }
+      pre {
+        background: #eee;
+        padding: 1rem;
+        overflow-x: auto;
+        border-radius: 0.6rem;
+        font-size: 0.9rem;
+      }
+      code {
+        font-family: monospace;
+      }
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 3rem 1rem 4rem;
+      }
+      .badge {
+        display: inline-block;
+        background: var(--primary);
+        color: #fff;
+        padding: 0.15rem 0.55rem;
+        border-radius: 0.4rem;
+        font-size: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>
+          네트워크 과제1 (Echo) 보고서
+          <span class="badge">v1.0</span>
+        </h1>
+      </header>
+
+      <h2>1. 프로젝트 개요</h2>
+      <p>
+        이 과제는 Python TCP 소켓을 이용하여 클라이언트가 대문자 문자열을 서버에
+        전송하면, 서버가 해당 문자열을 소문자로 변환하여 다시 클라이언트에
+        돌려주는 에코 프로그램을 구현하는 것입니다.
+      </p>
+
+      <h2>2. 전체 소스코드 + 주요 로직 설명</h2>
+
+      <h3>2-1. server.py - 소문자로 변환하는 TCP 서버</h3>
+      <p>
+        <strong>핵심</strong>: 클라이언트로부터 문자열을 받아 소문자로 변환 후
+        재전송
+      </p>
+      <details>
+        <summary>📄 server.py 전문 보기</summary>
+        <pre><code>import socket
+
+HOST = '127.0.0.1'
+PORT = 12345
+
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((HOST, PORT))
+server_socket.listen()
+
+print(f"서버가 {HOST}:{PORT} 에서 대기 중입니다...")
+
+while True:
+    conn, addr = server_socket.accept()
+    print(f"{addr} 연결됨")
+
+    with conn:
+        while True:
+            data = conn.recv(1024)
+            if not data:
+                break
+
+            response = data.decode().lower()
+            print(f"받음: {data.decode()} → 변환: {response}")
+
+            conn.sendall(response.encode())</code></pre>
+      </details>
+
+      <h3>2-2. client.py - 사용자 입력을 서버에 전송하는 클라이언트</h3>
+      <p>
+        <strong>핵심</strong>: 사용자로부터 대문자 입력을 받아 서버에 전송,
+        변환된 소문자 응답 출력
+      </p>
+      <details>
+        <summary>📄 client.py 전문 보기</summary>
+        <pre><code>import socket
+
+HOST = '127.0.0.1'
+PORT = 12345
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((HOST, PORT))
+
+try:
+    while True:
+        message = input("대문자 입력 (종료: exit): ")
+        if message.lower() == 'exit':
+            break
+
+        client_socket.sendall(message.encode())
+
+        data = client_socket.recv(1024)
+        print(f"서버 응답: {data.decode()}")
+finally:
+    client_socket.close()</code></pre>
+      </details>
+
+      <h2>3. 동작 과정</h2>
+      <ul>
+        <li>클라이언트가 서버에 TCP 연결을 생성합니다.</li>
+        <li>사용자가 입력한 대문자 문자열을 서버에 전송합니다.</li>
+        <li>서버는 문자열을 소문자로 변환하고 클라이언트에 돌려줍니다.</li>
+        <li>클라이언트는 소문자로 변환된 문자열을 출력합니다.</li>
+        <li>"exit" 입력 시 클라이언트 프로그램이 종료됩니다.</li>
+      </ul>
+    </div>
+  </body>
+</html>
